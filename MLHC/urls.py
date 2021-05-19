@@ -19,5 +19,6 @@ from main_page import views as main_views
 
 urlpatterns = [
     path('', main_views.index, name="index"),
+    path('audio/',main_views.audio, name="audio"),
     path('admin/', admin.site.urls),
 ]
