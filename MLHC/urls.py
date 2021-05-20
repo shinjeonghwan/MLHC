@@ -15,10 +15,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from main_page import views as main_views
+#from main_page import views as main_views
+
+#urlpatterns = [
+#     path('', main_views.index, name="index"),
+#     path('audio/',main_views.audio, name="audio"),
+#     path('admin/', admin.site.urls),
+#]
+
+#urlpatterns = [
+#    path('admin/', admin.site.urls),
+#    path('', main_views.index, name="index"),
+    #path('<int:random_pick>/', main_views.detail, name="detail"),
+#    path('<int:random_pick>/feedback/', main_views.feedback, name="feedback")
+#]
+
+
+from django.contrib import admin
+from django.urls import path, include
 
 urlpatterns = [
-    path('', main_views.index, name="index"),
-    path('audio/',main_views.audio, name="audio"),
     path('admin/', admin.site.urls),
+    path('main_page/', include('main_page.urls'))
 ]
+
