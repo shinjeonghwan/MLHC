@@ -1,3 +1,4 @@
 from django.contrib import admin
+from main_page.models import AD_LIST
 
-# Register your models here.
+admin.site.register(AD_LIST)
