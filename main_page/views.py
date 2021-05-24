@@ -13,7 +13,8 @@ def index(request):
     url_list_len = len(url_list)
 
     random_pick = random.randint(0, url_list_len -1)
-    random_ad = url_list[random_pick]
+    random_ad = url_list[random_pick]+"?autoplay=1&mute=1"
+    print(random_ad)
     random_ad_id = url_list_id[random_pick]
 
     feedback_value, feedback_id = Check_Feedback_value(stored_ad_url)

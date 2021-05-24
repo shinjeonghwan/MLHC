@@ -28,13 +28,16 @@ SECRET_KEY = 'django-insecure-(gba%hr)8l49%8hfh2#5z9kn7_ls1+*%ybunt^elv8*ul!b+$_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['133.186.229.71', '2021-capstone-mlhc.tk']
+#ALLOWED_HOSTS = ['133.186.229.71', '2021-capstone-mlhc.tk']
+ALLOWED_HOSTS = ['2021-capstone-mlhc.tk']
+
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'main_page',
+    'sslserver',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
