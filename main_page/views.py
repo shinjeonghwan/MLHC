@@ -4,8 +4,11 @@ import random
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
+from django.conf import settings
+
 def index(request):
     print("index.view start!!!")
+    print(settings.KAKAO_API_KEY)
     stored_ad_url = AD_LIST.objects.all()
     length = to_list(stored_ad_url)
 
