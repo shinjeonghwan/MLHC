@@ -10,7 +10,7 @@ headers = {
     "Authorization": "KakaoAK " + rest_api_key,
 }
 
-with open('heykakao.wav', 'rb') as fp:
+with open('test.wav', 'rb') as fp:
     audio = fp.read()
 
 res = requests.post(kakao_speech_url, headers=headers, data=audio)
