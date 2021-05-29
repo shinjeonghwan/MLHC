@@ -154,7 +154,8 @@ function createDownloadLink(blob) {
 		      }
 		  };
 		  var fd=new FormData();
-		  fd.append("audio_data",blob, filename);
+		  //fd.append("audio_data",blob, filename);
+                  fd.append("audio_data.wav",blob);
 		  xhr.open("POST","/main_page/upload/",true);
 		  //xhr.open("POST","https://2021-capstone-mlhc.tk:8000/main_page/upload/",true); csrf 토큰 문제 있음 
                   xhr.send(fd);
