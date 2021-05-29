@@ -96,15 +96,15 @@ def audio_record(request):
 
 @csrf_exempt
 def upload(request):
-    print(request.FILES.get('audio_data'))
-    audio_data = request.FILES.get('audio_data')
+    print(request.FILES['audio_data'])
+    audio_data = request.FILES['audio_data']
     print(type(audio_data))
     print(audio_data.size)
-    audio = wave.open('test.wav', 'wb')
-    audio.setnchannels(1)
-    audio.setnframes(1)
-    audio.setsampwidth(1)
-    audio.setframerate(16000)
+    audio = wave.open('t2est.wav', 'wb')
+    audio.setnchannels(2) #1
+    audio.setnframes(100)   #1
+    audio.setsampwidth(2) #1
+    audio.setframerate(8000) #16000
     blob = audio_data.read()
     audio.writeframes(blob) #on playing 'test.wav' only noise can be heard
     return JsonResponse({})
