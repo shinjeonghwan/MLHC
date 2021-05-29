@@ -100,34 +100,34 @@ def upload(request):
     audio_data = request.FILES['audio_data']
     print(type(audio_data))
     print(audio_data.size)
-    audio = wave.open('t4est.wav', 'wb')
+    audio = wave.open('test.wav', 'wb')
     audio.setnchannels(1) #1
     audio.setnframes(1)   #1
-    audio.setsampwidth(2) #1
-    audio.setframerate(32000) #16000
+    audio.setsampwidth(2) #2
+    audio.setframerate(48000) #48000
     blob = audio_data.read()
     audio.writeframes(blob) #on playing 'test.wav' only noise can be heard5
 
-    audio2 = wave.open('t5est.wav', 'wb')
-    audio2.setnchannels(1) #1
-    audio2.setnframes(1)   #1
-    audio2.setsampwidth(4) #1
-    audio2.setframerate(32000) #16000
-    audio2.writeframes(blob) #on playing 'test.wav' only noise can be heard
+#    audio2 = wave.open('t5est.wav', 'wb')
+#    audio2.setnchannels(1) #1
+#    audio2.setnframes(1)   #1
+#    audio2.setsampwidth(4) #1
+#    audio2.setframerate(000) #16000
+#    audio2.writeframes(blob) #on playing 'test.wav' only noise can be heard
 
-    audio3 = wave.open('t6est.wav', 'wb')
-    audio3.setnchannels(1) #1
-    audio3.setnframes(1)   #1
-    audio3.setsampwidth(2) #1
-    audio3.setframerate(48000) #16000
-    audio3.writeframes(blob) #on playing 'test.wav' only noise can be heard
+#    audio3 = wave.open('t6est.wav', 'wb')
+#    audio3.setnchannels(1) #1
+#    audio3.setnframes(1)   #1
+#    audio3.setsampwidth(2) #1
+#    audio3.setframerate(48000) #16000
+#    audio3.writeframes(blob) #on playing 'test.wav' only noise can be heard
 
-    audio4 = wave.open('t7est.wav', 'wb')
-    audio4.setnchannels(1) #1
-    audio4.setnframes(1)   #1
-    audio4.setsampwidth(4) #1
-    audio4.setframerate(48000) #16000
-    audio4.writeframes(blob) #on playing 'test.wav' only noise can be heard
+#    audio4 = wave.open('t7est.wav', 'wb')
+#    audio4.setnchannels(1) #1
+#    audio4.setnframes(1)   #1
+#    audio4.setsampwidth(2) #1
+#    audio4.setframerate(48000) #16000
+#    audio4.writeframes(blob) #on playing 'test.wav' only noise can be heard
 
 
     return JsonResponse({})
