@@ -10,17 +10,14 @@ headers = {
     "Authorization": "KakaoAK " + rest_api_key,
 }
 
-with open('test.wav', 'rb') as fp:
+with open('test.pcm', 'rb') as fp:
     audio = fp.read()
 
 res = requests.post(kakao_speech_url, headers=headers, data=audio)
 print(res)
 print(type(res))
 
-print("GGG")
 result_json_string = res.text[res.text.index('{"type":"finalResult"'):res.text.rindex('}')+1]
-print("BBB")
 result = json.loads(result_json_string)
-print("NBNB")
 print(result)
 print(result['value'])
