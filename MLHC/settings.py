@@ -141,7 +141,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
-KAKAO_API_KEY = os.environ.get('KAKAO_API_KEY')
+KAKAO_API_KEY = os.environ.get('DJANGO_KAKAO_API_KEY')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

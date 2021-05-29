@@ -1,29 +1,36 @@
 from django.shortcuts import render, get_object_or_404
 from main_page.models import AD_LIST
 import random
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse
+import json
+import wave
+from django.views.decorators.csrf import csrf_exempt
 
 from django.conf import settings
 
+
+
 def index(request):
     print("index.view start!!!")
-    print(settings.KAKAO_API_KEY)
+    print(type(settings.KAKAO_API_KEY))
     stored_ad_url = AD_LIST.objects.all()
     length = to_list(stored_ad_url)
+#    print(stored_ad_url)
 
     url_list, url_list_id = watch_to_embed(stored_ad_url)
     url_list_len = len(url_list)
 
     random_pick = random.randint(0, url_list_len -1)
-    random_ad = url_list[random_pick]+"?autoplay=1&mute=1"
-    print(random_ad)
+    random_ad = url_list[random_pick] #+"?autoplay=1&mute=1"
+
     random_ad_id = url_list_id[random_pick]
+    random_ad_id_feedback_value = AD_LIST.objects.get(id = random_ad_id).feedback_value
 
     feedback_value, feedback_id = Check_Feedback_value(stored_ad_url)
 
     context = {'stored_ad_url':stored_ad_url, 'url_list': url_list, 'rand_url': random_ad, 'random_pick' : random_ad_id, 'len': length,
-               'feedback_value': feedback_value, 'feedback_id': feedback_id}
+               'feedback_value': feedback_value, 'feedback_id': feedback_id, 'random_ad_id_feedback_value' : random_ad_id_feedback_value}
 
     return render(request, "main_page/index.html", context)
 
@@ -39,24 +46,36 @@ def watch_to_embed(stored_ad_url):
     for list in stored_ad_url:
         list_of_ad_url.append(list.ad_url.replace("/watch?v=","/embed/"))
         list_of_ad_id.append(list.id)
-        #print(list_of_ad_url)
-        #print(list_of_ad_id)
+
     return list_of_ad_url, list_of_ad_id
 
 def audio(request):
     return render(request, "main_page/audio.html")
 
-def P_feedback(request, random_pick):
+def P_feedback(request):
+#    if request.is_ajax():
+#        random_pick = request.GET['P_key']
+    if request.method=="GET":
+        random_pick = request.GET.get('P_key', None)
+
     v =  AD_LIST.objects.get(id=random_pick)
     v.feedback_value +=1
     v.save()
-    return HttpResponseRedirect(reverse('main_page:index'))
+    context = {'update_feedback_value' : v.feedback_value}
+    return HttpResponse(json.dumps(context), content_type="application/json")
 
-def N_feedback(request, random_pick):
+
+def N_feedback(request):
+#    if request.is_ajax():
+#        random_pick = request.GET['N_key']
+    if request.method=="GET":
+        random_pick = request.GET.get('N_key', None)
+
     v =  AD_LIST.objects.get(id=random_pick)
     v.feedback_value -=1
     v.save()
-    return HttpResponseRedirect(reverse('main_page:index'))
+    context = {'update_feedback_value' : v.feedback_value}
+    return HttpResponse(json.dumps(context), content_type="application/json")
 
 def Check_Feedback_value(stored_ad_url):
     list_of_ad_feedback_value=[]
@@ -66,3 +85,26 @@ def Check_Feedback_value(stored_ad_url):
         list_of_ad_id.append(list.id)
     return list_of_ad_feedback_value, list_of_ad_id
 
+
+def audio_record(request):
+
+    audio_test = 1
+
+    context = {'audio_test' : audio_test}
+    return render (request, "main_page/record.html", context)
+
+
+@csrf_exempt
+def upload(request):
+    print(request.FILES.get('audio_data'))
+    audio_data = request.FILES.get('audio_data')
+    print(type(audio_data))
+    print(audio_data.size)
+    audio = wave.open('test.wav', 'wb')
+    audio.setnchannels(1)
+    audio.setnframes(1)
+    audio.setsampwidth(1)
+    audio.setframerate(16000)
+    blob = audio_data.read()
+    audio.writeframes(blob) #on playing 'test.wav' only noise can be heard
+    return JsonResponse({})

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>UPload_test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+    <h1>upload TEST</h1>
+{% csrf_token %}
+
+<script>
+   navigator.mediaDevices.getUserMedia({audio:true}).then(stream => {audio_handler(stream)});
+    var audio_chunks = [];
+    audio_handler = function(stream){
+    rec = new MediaRecorder(stream, {mimeType : 'audio/webm', codecs : "opus"});
+        rec.ondataavailable = function(e){
+            audio_chunks.push(e.data);
+        }
+    }
+    //on rec.stop() 
+    var blob = new Blob(audio_chunks, {'type':'audio/wav; codecs=opus'});
+    console.log(blob);
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("POST", "upload/", true);
+    var data = new FormData();
+    data.append('data', blob, 'audio_blob');
+    xhttp.send(data);
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);     
+         }
+    };
+ </script>
+
+  </body>
+</html>

@@ -4,29 +4,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 </head>
 
 <body>
 <h1>WELCOME MLHC</h1>
 
 
-<h1> 랜덤으로 선택한 광고 게시</h></br>
+<h1> 랜덤으로 선택한 광고 게시: < {{random_pick}} ></h></br>
 <iframe width="560" height="315" src = {{ rand_url }} > </iframe>
 
-<h2>{{random_pick}}</h2>
 
-<h2> 광고 관련 피드백</h2>
-<form action="{% url 'main_page:P_feedback' random_pick %}" method="post">
-{% csrf_token %}
-<input type="submit" value="Positive" />
-</form>
+<h2> 선택한 광고의 피드백 값< {{random_ad_id_feedback_value}} ></h2></br>
 
-<form action="{% url 'main_page:N_feedback' random_pick %}" method="post">
-{% csrf_token %}
 
-<input type="submit" value="Negative" />
-</form>
+<h3>테스트</h3></br>
+<span id="feedback_value">{{random_ad_id_feedback_value}}</span></br>
 
+
+<button id="P_button" value="Positive">좋아요</button>
+<button id="N_button" value="Negative" name="N">싫어요</button>
+
+<script>
+/*
+   navigator.mediaDevices.getUserMedia({audio:true}).then(stream => {audio_handler(stream)});
+    var audio_chunks = [];
+    audio_handler = function(stream){
+    rec = new MediaRecorder(stream, {mimeType : 'audio/webm', codecs : "opus"});
+        rec.ondataavailable = function(e){
+            audio_chunks.push(e.data);
+        }
+    }
+    //on rec.stop()
+    var blob = new Blob(audio_chunks, {'type':'audio/wav; codecs=opus'});
+    console.log(blob);
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("POST", "upload/", true);
+    var data = new FormData();
+    data.append('data', blob, 'audio_blob');
+    xhttp.send(data);
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+         }
+    };
+*/
+ </script>
+
+
+
+<script> 
+    $('#P_button').click(function(){
+        console.log('hhhhiQQ')
+        $.ajax({ 
+            type:"GET",
+            dataType:"JSON",
+            url:'P_feedback/', 
+            data : { 'P_key': {{random_pick}} },
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            success:function(response){ 
+                $('#feedback_value').html(response.update_feedback_value) 
+            } 
+        }) 
+       }) 
+
+
+    $('#N_button').click(function(){
+        console.log('TTTixxx')
+        $.ajax({
+            type:"GET",
+            dataType:"JSON",
+            url:'N_feedback/',
+            data : { 'N_key': {{random_pick}} },
+             csrfmiddlewaretoken: '{{ csrf_token }}',
+            success:function(response){
+                $('#feedback_value').html(response.update_feedback_value)
+            }
+        })
+       })
+
+</script>
+
+
+
+
+
+</br></br></br>
 
 
 
@@ -36,7 +99,7 @@
     <h2> 광고 링크 나열</h2>
     {% for list in url_list %}
             <h4> {{ list }} </h4>
-            <iframe width="360" height="115" src = {{ list }} > </iframe>
+            <!-- <iframe width="360" height="115" src = {{ list }} > </iframe> -->
     {% endfor %}
 
     <h2> 광고 점수 나열</h2>
