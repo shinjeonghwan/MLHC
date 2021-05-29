@@ -100,7 +100,7 @@ def upload(request):
     audio_data = request.FILES['audio_data']
     print(type(audio_data))
     print(audio_data.size)
-    audio = wave.open('test.wav', 'wb')
+    audio = wave.open('t1est.wav', 'wb')
     audio.setnchannels(1) #1
     audio.setnframes(1)   #1
     audio.setsampwidth(1) #2
