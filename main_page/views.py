@@ -36,16 +36,23 @@ def index(request):
 
         feedback_value, feedback_id = Check_Feedback_value(stored_ad_url)
 
-        context = {'stored_ad_url':stored_ad_url, 'url_list': url_list, 'rand_url': random_ad, 'random_pick' : random_ad_id, 'len': length,
-                   'feedback_value': feedback_value, 'feedback_id': feedback_id, 'random_ad_id_feedback_value' : random_ad_id_feedback_value}
+        context = {'stored_ad_url':stored_ad_url, 'url_list': url_list, 'selected_url': random_ad, 'selected_id' : random_ad_id, 'len': length,
+                   'feedback_value': feedback_value, 'feedback_id': feedback_id, 'selected_ad_id_feedback_value' : random_ad_id_feedback_value}
         return render(request, "main_page/index.html", context)
 
     else:     #음성파일이 있으면
-        print("음성파일 있음")
-        #pick =selected_ad(keyword)여기에 태그 매칭 할 알고리즘 넣기
+        print("음성파일 있음")        #음성 파일이 있는데, 광고 DB에 전부 매칭되지 않는 음성인 경우 처리해주어야함. random_pick 과정을 함수화 해서, 위에도 쓰고, 여기도 쓰면 좋을듯
+        pick, scored_list = selected_ad(keyword, stored_ad_url, length)
         print(keyword)
 
-#   return render(request, "main_page/index.html", context)
+        picked_ad = AD_LIST.objects.get(id=pick)
+        picked_ad_url = picked_ad.ad_url.replace("/watch?v=","/embed/")
+        print(picked_ad_url)
+        picked_ad_feedback_value = picked_ad.feedback_value
+        context = {'selected_url': picked_ad_url, 'selected_id' : pick, 'selected_ad_id_feedback_value' : picked_ad_feedback_value,
+                   'scored_list' : scored_list}
+
+        return render(request, "main_page/index.html", context)
 
 def to_list(stored_ad_url):
     length = 0
@@ -121,9 +128,6 @@ def wav_to_kakao_api(rest_api_key):
 
     keyword = []
 
-    print("rest_API_KEY")
-    print(rest_api_key)
-
     headers = {
         "Content-Type": "application/octet-stream",
         "X-DSS-Service": "DICTATION",
@@ -149,19 +153,60 @@ def wav_to_kakao_api(rest_api_key):
 
 def string_to_keyword(string):    #keyword로 쪼갤 아이디어 함수
     demo = string.split(' ')
+    print(demo)                #이후에 보완해야함
+    search = ['이','가','을','를',
+              '에','에서','의','한테',
+              '고','라고','처럼','만큼',
+              '와','과','은','는','뿐',
+              '만','요','란','다','랑','이다',
+             ]
+    for i, word in enumerate(demo):
+        for j in range(len(search)):
+            if search[j] in word:
+                print('>> modify: ' + word)
+                demo[i] = word.strip(search[j])
     print(demo)
-    return 2
+    return demo
 
 
 
 
 
+def selected_ad(keyword, stored_ad_url, length):         #태그매칭으로 직접 광고를 선택할 함수       #현재는 전수조사 형태로 pick 합시다.
+#결국 결정된 ad의 id값만 따서 리턴해주면 됨.
+    tmp_list = []
+    tmp_id_list = []
+    ad_keyword_cnt = [0 for i in range(length)]
+    print(len(ad_keyword_cnt))
+    result = 0
 
-#def select_ad():         #태그매칭으로 직접 광고를 선택할 함수
+    scored_list = []
+
+    for i, list in enumerate(stored_ad_url):       #모든 ad_list에 대하여 진행
+        tmp_id_list.append(list.id)
+        tmp_list.append(list.main_key_word)
+        tmp_list.append(list.tag1)
+        tmp_list.append(list.tag2)
+        tmp_list.append(list.tag3)
+
+        for j in range(0,4):   #각각 4번 돌릴거
+            if tmp_list[j] in keyword:
+                ad_keyword_cnt[i] += 1
+                #여기서는 각 ad_list 에 count + 1    제일 많이 카운트 된 순위로 결정, 동점자 발생 시, 가장 앞쪽  순서로 처리
+                if tmp_list[j] not in scored_list:
+                    scored_list.append(tmp_list[j])
+        tmp_list =[]
 
 
+    print(scored_list)
 
+#    if max(ad_keyword_cnt) == 0:     #이 부분은 나중에 음성에서 뽑힌 키워드랑 광고랑전혀 매칭 안될 때, 처리하기위한 구문
+#        result = 0
+#    else:
+#        result = tmp_id_list[ad_keyword_cnt.index(max(ad_keyword_cnt))]
 
+    result = tmp_id_list[ad_keyword_cnt.index(max(ad_keyword_cnt))]
+    print("result")
+    print(result)
 
-
-
+    return result, scored_list           #결정된 ad의 id값, 그 때 사용된 scored_list
