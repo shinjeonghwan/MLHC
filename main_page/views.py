@@ -100,11 +100,11 @@ def upload(request):
     audio_data = request.FILES['audio_data']
     print(type(audio_data))
     print(audio_data.size)
-    audio = wave.open('t1est.wav', 'wb')
+    audio = wave.open('t2est.wav', 'wb')
     audio.setnchannels(1) #1
     audio.setnframes(1)   #1
     audio.setsampwidth(2) #2
-    audio.setframerate(16000) #48000
+    audio.setframerate(48000) #48000
     blob = audio_data.read()
     audio.writeframes(blob) #on playing 'test.wav' only noise can be heard5
 
