@@ -9,6 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django.conf import settings
 
+from main_page.key import KAKAO_API_KEY
+
 
 def index(request):
     print("index.view start!!!")
@@ -18,7 +20,8 @@ def index(request):
     length = to_list(stored_ad_url)
 #    print(stored_ad_url)
 
-    keyword = wav_to_kakao_api(settings.KAKAO_API_KEY)   #rest_api == SECRET_KEY
+#    keyword = wav_to_kakao_api(settings.KAKAO_API_KEY)   #rest_api == SECRET_KEY
+    keyword = wav_to_kakao_api(KAKAO_API_KEY())
     print(keyword)
 
     if keyword == 0: #저장된 음성파일이 없으면
@@ -117,6 +120,9 @@ def wav_to_kakao_api(rest_api_key):
     kakao_speech_url = "https://kakaoi-newtone-openapi.kakao.com/v1/recognize"
 
     keyword = []
+
+    print("rest_API_KEY")
+    print(rest_api_key)
 
     headers = {
         "Content-Type": "application/octet-stream",
