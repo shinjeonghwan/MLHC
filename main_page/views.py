@@ -116,7 +116,6 @@ def wav_to_kakao_api(rest_api_key):
     import json
     kakao_speech_url = "https://kakaoi-newtone-openapi.kakao.com/v1/recognize"
 
-    #rest_api_key = 'a0b818404883532ce93da157ad839f89'
     keyword = []
 
     headers = {
