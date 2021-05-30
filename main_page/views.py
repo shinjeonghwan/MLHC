@@ -3,36 +3,46 @@ from main_page.models import AD_LIST
 import random
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse
-import json
+import json, requests
 import wave
 from django.views.decorators.csrf import csrf_exempt
 
 from django.conf import settings
 
 
-
 def index(request):
     print("index.view start!!!")
-    print(type(settings.KAKAO_API_KEY))
+#    print(settings.KAKAO_API_KEY)
+#    print(type(settings.KAKAO_API_KEY))
     stored_ad_url = AD_LIST.objects.all()
     length = to_list(stored_ad_url)
 #    print(stored_ad_url)
 
-    url_list, url_list_id = watch_to_embed(stored_ad_url)
-    url_list_len = len(url_list)
+    keyword = wav_to_kakao_api(settings.KAKAO_API_KEY)   #rest_api == SECRET_KEY
+    print(keyword)
 
-    random_pick = random.randint(0, url_list_len -1)
-    random_ad = url_list[random_pick] #+"?autoplay=1&mute=1"
+    if keyword == 0: #저장된 음성파일이 없으면
+        url_list, url_list_id = watch_to_embed(stored_ad_url)
+        url_list_len = len(url_list)
 
-    random_ad_id = url_list_id[random_pick]
-    random_ad_id_feedback_value = AD_LIST.objects.get(id = random_ad_id).feedback_value
+        random_pick = random.randint(0, url_list_len -1)
+        random_ad = url_list[random_pick] #+"?autoplay=1&mute=1"
 
-    feedback_value, feedback_id = Check_Feedback_value(stored_ad_url)
+        random_ad_id = url_list_id[random_pick]
+        random_ad_id_feedback_value = AD_LIST.objects.get(id = random_ad_id).feedback_value
 
-    context = {'stored_ad_url':stored_ad_url, 'url_list': url_list, 'rand_url': random_ad, 'random_pick' : random_ad_id, 'len': length,
-               'feedback_value': feedback_value, 'feedback_id': feedback_id, 'random_ad_id_feedback_value' : random_ad_id_feedback_value}
+        feedback_value, feedback_id = Check_Feedback_value(stored_ad_url)
 
-    return render(request, "main_page/index.html", context)
+        context = {'stored_ad_url':stored_ad_url, 'url_list': url_list, 'rand_url': random_ad, 'random_pick' : random_ad_id, 'len': length,
+                   'feedback_value': feedback_value, 'feedback_id': feedback_id, 'random_ad_id_feedback_value' : random_ad_id_feedback_value}
+        return render(request, "main_page/index.html", context)
+
+    else:     #음성파일이 있으면
+        print("음성파일 있음")
+        #pick =selected_ad(keyword)여기에 태그 매칭 할 알고리즘 넣기
+        print(keyword)
+
+#   return render(request, "main_page/index.html", context)
 
 def to_list(stored_ad_url):
     length = 0
@@ -85,49 +95,68 @@ def Check_Feedback_value(stored_ad_url):
         list_of_ad_id.append(list.id)
     return list_of_ad_feedback_value, list_of_ad_id
 
-
-def audio_record(request):
-
-    audio_test = 1
-
-    context = {'audio_test' : audio_test}
-    return render (request, "main_page/record.html", context)
-
-
 @csrf_exempt
 def upload(request):
     print(request.FILES['audio_data'])
     audio_data = request.FILES['audio_data']
     print(type(audio_data))
     print(audio_data.size)
-    audio = wave.open('t2est.wav', 'wb')
-    audio.setnchannels(1) #1
-    audio.setnframes(1)   #1
-    audio.setsampwidth(2) #2
-    audio.setframerate(48000) #48000
+    audio = wave.open('t1est.wav', 'wb')
+    audio.setnchannels(1)
+    audio.setnframes(1)
+    audio.setsampwidth(2)
+    audio.setframerate(16000)
     blob = audio_data.read()
-    audio.writeframes(blob) #on playing 'test.wav' only noise can be heard5
-
-#    audio2 = wave.open('t5est.wav', 'wb')
-#    audio2.setnchannels(1) #1
-#    audio2.setnframes(1)   #1
-#    audio2.setsampwidth(4) #1
-#    audio2.setframerate(000) #16000
-#    audio2.writeframes(blob) #on playing 'test.wav' only noise can be heard
-
-#    audio3 = wave.open('t6est.wav', 'wb')
-#    audio3.setnchannels(1) #1
-#    audio3.setnframes(1)   #1
-#    audio3.setsampwidth(2) #1
-#    audio3.setframerate(48000) #16000
-#    audio3.writeframes(blob) #on playing 'test.wav' only noise can be heard
-
-#    audio4 = wave.open('t7est.wav', 'wb')
-#    audio4.setnchannels(1) #1
-#    audio4.setnframes(1)   #1
-#    audio4.setsampwidth(2) #1
-#    audio4.setframerate(48000) #16000
-#    audio4.writeframes(blob) #on playing 'test.wav' only noise can be heard
-
-
+    audio.writeframes(blob)
     return JsonResponse({})
+
+
+def wav_to_kakao_api(rest_api_key):
+    import requests
+    import json
+    kakao_speech_url = "https://kakaoi-newtone-openapi.kakao.com/v1/recognize"
+
+    #rest_api_key = 'a0b818404883532ce93da157ad839f89'
+    keyword = []
+
+    headers = {
+        "Content-Type": "application/octet-stream",
+        "X-DSS-Service": "DICTATION",
+        "Authorization": "KakaoAK " + rest_api_key,
+    }
+    try:
+        with open('t1est.wav', 'rb') as fp:
+            audio = fp.read()
+        res = requests.post(kakao_speech_url, headers=headers, data=audio)
+
+        result_json_string = res.text[res.text.index('{"type":"finalResult"'):res.text.rindex('}')+1]
+        result = json.loads(result_json_string)
+        print(result)
+        print(result['value'])
+
+        keyword = string_to_keyword(result['value'])
+        return keyword
+
+    except:
+        return 0
+
+
+
+def string_to_keyword(string):    #keyword로 쪼갤 아이디어 함수
+    demo = string.split(' ')
+    print(demo)
+    return 2
+
+
+
+
+
+
+#def select_ad():         #태그매칭으로 직접 광고를 선택할 함수
+
+
+
+
+
+
+

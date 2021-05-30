@@ -25,6 +25,8 @@
 <button id="P_button" value="Positive">좋아요</button>
 <button id="N_button" value="Negative" name="N">싫어요</button>
 
+</br></br></br>
+
 <script>
 /*
    navigator.mediaDevices.getUserMedia({audio:true}).then(stream => {audio_handler(stream)});
@@ -88,8 +90,26 @@
 
 
 
+<div id="controls">
+    <button id="recordButton">Record</button>
+    <button id="pauseButton" disabled>Pause</button>
+    <button id="stopButton" disabled>Stop</button>
+</div>
+
+<div id="formats">Format: start recording to see sample rate</div>
+    <p><strong>Recordings:</strong></p>
+    <ol id="recordingsList"></ol>
+    <script src="/static/js/recorder.js"></script>
+    <script src= "/static/js/app.js"></script>
+
+
+
 
 </br></br></br>
+
+
+
+
 
 
 

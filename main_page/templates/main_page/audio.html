@@ -7,14 +7,11 @@
 </head>
 
 <body>
-    <!-- <input type=checkbox id="chk-hear-mic"><label for="chk-hear-mic">마이크 소리 듣기</label> -->
+    <input type=checkbox id="chk-hear-mic"><label for="chk-hear-mic">마이크 소리 듣기</label>
     <button id="record">녹음</button>
     <button id="stop">정지</button>
     <div id="sound-clips"></div>
     <script>
-        
-        //window.onload = mediarecorder.start()
-
         const record = document.getElementById("record")
         const stop = document.getElementById("stop")
         const soundClips = document.getElementById("sound-clips")
@@ -27,17 +24,17 @@
         //        const gainNode = audioCtx.createGain()
         //        const biquadFilter = audioCtx.createBiquadFilter()
 
-    //    function makeSound(stream) {
-   //         const source = audioCtx.createMediaStreamSource(stream)
+        function makeSound(stream) {
+            const source = audioCtx.createMediaStreamSource(stream)
 
- //           source.connect(analyser)
+            source.connect(analyser)
             //            analyser.connect(distortion)
             //            distortion.connect(biquadFilter)
             //            biquadFilter.connect(gainNode)
             //            gainNode.connect(audioCtx.destination) // connecting the different audio graph nodes together
- //           analyser.connect(audioCtx.destination)
+            analyser.connect(audioCtx.destination)
 
-//        }
+        }
 
         if (navigator.mediaDevices) {
             console.log('getUserMedia supported.')
@@ -52,14 +49,14 @@
 
                     const mediaRecorder = new MediaRecorder(stream)
                     
-//                    chkHearMic.onchange = e => {
-//                        if(e.target.checked == true) {
-//                            audioCtx.resume()
- //                           makeSound(stream)
-  //                      } else {
-  //                          audioCtx.suspend()
-  //                      }
-  //                  }
+                    chkHearMic.onchange = e => {
+                        if(e.target.checked == true) {
+                            audioCtx.resume()
+                            makeSound(stream)
+                        } else {
+                            audioCtx.suspend()
+                        }
+                    }
                     
                     record.onclick = () => {
                         mediaRecorder.start()

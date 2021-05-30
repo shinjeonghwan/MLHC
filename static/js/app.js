@@ -145,7 +145,7 @@ function createDownloadLink(blob) {
 	//upload link
 	var upload = document.createElement('a');
 	upload.href="#";
-	upload.innerHTML = "Upload222";
+	upload.innerHTML = "Upload";
 	upload.addEventListener("click", function(event){
 		  var xhr=new XMLHttpRequest();
 		  xhr.onload=function(e) {
@@ -155,8 +155,7 @@ function createDownloadLink(blob) {
 		  };
 		  var fd=new FormData();
 		  fd.append("audio_data",blob, filename);
-		  //xhr.open("POST","/main_page/upload",true);
-		  xhr.open("POST","https://2021-capstone-mlhc.tk/main_page/upload",true);
+                  xhr.open("POST","/main_page/upload/",true);
                   xhr.send(fd);
 	})
 	li.appendChild(document.createTextNode (" "))//add a space in between
