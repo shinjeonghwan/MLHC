@@ -111,7 +111,7 @@ def upload(request):
     audio_data = request.FILES['audio_data']
     print(type(audio_data))
     print(audio_data.size)
-    audio = wave.open('t1est.wav', 'wb')
+    audio = wave.open('t2est.wav', 'wb')
     audio.setnchannels(1)
     audio.setnframes(1)
     audio.setsampwidth(2)
@@ -134,7 +134,7 @@ def wav_to_kakao_api(rest_api_key):
         "Authorization": "KakaoAK " + rest_api_key,
     }
     try:
-        with open('t1est.wav', 'rb') as fp:
+        with open('t2est.wav', 'rb') as fp:
             audio = fp.read()
         res = requests.post(kakao_speech_url, headers=headers, data=audio)
 

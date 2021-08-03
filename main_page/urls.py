@@ -4,7 +4,7 @@ from main_page import views
 app_name = 'main_page'
 
 urlpatterns = [
-    path(r'', views.index, name="index"),
+    path('', views.index, name="index"),
     path('audio/', views.audio, name='audio'),
 #    path('audio/record' , views.audio_record, name='record'),
     path('upload/', views.upload, name='upload'),
