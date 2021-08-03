@@ -114,13 +114,13 @@
 
 </br><h1> 저장되어 있는 광고갯수 {{len}}</h1></br>
 
-    <h2> 광고 링크 나열</h2>
+    <h2> 유사한 광고 출력 나열</h2>
     {% for list in url_list %}
             <h4> {{ list }} </h4>
             <!-- <iframe width="360" height="115" src = {{ list }} > </iframe> -->
     {% endfor %}
 
-    <h2> 광고 점수 나열</h2>
+    <h2> 위에 점수순으로 광고  나열</h2>
     {% for list in feedback_value %}
             <h4> {{ list }} </h4>
     {% endfor %}
