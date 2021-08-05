@@ -49,6 +49,17 @@ def index(request):
         picked_ad_url = picked_ad.ad_url.replace("/watch?v=","/embed/")
         print(picked_ad_url)
         picked_ad_feedback_value = picked_ad.feedback_value
+
+
+#        for tag in keyword:
+#            similar_ad = AD_LIST.objects.get(main_key_word = tag)
+#            print("keyword 픽")
+#            print(similar_ad)
+#            similar_ad_list = similar_ad.ad_url
+
+
+
+
         context = {'selected_url': picked_ad_url, 'selected_id' : pick, 'selected_ad_id_feedback_value' : picked_ad_feedback_value,
                    'scored_list' : scored_list}
 
