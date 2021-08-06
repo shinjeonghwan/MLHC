@@ -57,30 +57,21 @@ def index(request):
         picked_ad_feedback_value = picked_ad.feedback_value
 
 
-        tmp_similar_ad_list = []
+        similar_ad_list = []
         for tag in keyword:
-            print(tag)
-            similar_ad = AD_LIST.objects.filter(main_key_word=tag)
-            similar_ad = similar_ad.values()
-            if similar_ad:
+            if AD_LIST.objects.get(main_	key_word = tag) == True:
+                similar_ad = AD_LIST.objects.get(main_key_word = tag)
                 print("keyword 픽")
-                for queryset_dict in similar_ad:
-                    tmp_similar_ad_list.append(queryset_dict['ad_url'])
+                print(similar_ad)
+                similar_ad.ad_url.apppend(similar_ad)
             else:
                 print("keyword 선택 안됨")
-                pass
 
 
-        print(tmp_similar_ad_list)
-
-        similar_ad_list = []
-        for link in tmp_similar_ad_list:
-            similar_ad_list.append(link.split("/watch?v=")[1])
-
-        print(similar_ad_list)
+        print(similar_ad)
 
         context = {'selected_url': picked_ad_url, 'selected_id' : pick, 'selected_ad_id_feedback_value' : picked_ad_feedback_value,
-                   'scored_list' : scored_list, 'similar_ad_list' : similar_ad_list}
+                   'scored_list' : scored_list, 'similar_list' : similar_ad_list}
 
         return render(request, "main_page/index.html", context)
 
