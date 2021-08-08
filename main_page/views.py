@@ -48,6 +48,7 @@ def index(request):
         picked_ad = AD_LIST.objects.get(id=pick)
         str_split = picked_ad.ad_url.split("/watch?v=")
         ad_thumnail = str_split[1]
+        print("FGHDF")
         print(str_split)
         print(ad_thumnail)
 
@@ -56,31 +57,38 @@ def index(request):
         print(picked_ad_url)
         picked_ad_feedback_value = picked_ad.feedback_value
 
-
-        tmp_similar_ad_list = []
+#관련 영상 썸네일 누름녀 새로운 ad.html로 넘어가서 거기서 영상 처리하는 걸로 하면 어떨까. 아니면 a태그에 ad.html?key=ad_value 형태로 하는거는 어떨까?
+        similar_ad_list = []
+        similar_ad_name = []
+        similar_ad_feedback_value = []
         for tag in keyword:
             print(tag)
-            similar_ad = AD_LIST.objects.filter(main_key_word=tag)
+            similar_ad = AD_LIST.objects.filter(main_key_word=tag).order_by('-feedback_value')
             similar_ad = similar_ad.values()
             if similar_ad:
                 print("keyword 픽")
                 for queryset_dict in similar_ad:
-                    tmp_similar_ad_list.append(queryset_dict['ad_url'])
+                    print(queryset_dict)
+                    modi_link = queryset_dict['ad_url']
+                    print(modi_link)
+                    modi_link = modi_link.split("/watch?v=")[1]
+                    print(modi_link)
+                    if modi_link == ad_thumnail:
+                        continue
+                    if modi_link not in similar_ad_list:
+                        similar_ad_list.append(modi_link)
+                        similar_ad_name.append(queryset_dict['ad_name'])
+                        similar_ad_feedback_value.append(queryset_dict['feedback_value'])
+
             else:
                 print("keyword 선택 안됨")
                 pass
 
 
-        print(tmp_similar_ad_list)
-
-        similar_ad_list = []
-        for link in tmp_similar_ad_list:
-            similar_ad_list.append(link.split("/watch?v=")[1])
-
         print(similar_ad_list)
 
         context = {'selected_url': picked_ad_url, 'selected_id' : pick, 'selected_ad_id_feedback_value' : picked_ad_feedback_value,
-                   'scored_list' : scored_list, 'similar_ad_list' : similar_ad_list}
+                   'scored_list' : scored_list, 'similar_ad_list' : similar_ad_list, 'similar_ad_name' : similar_ad_name}
 
         return render(request, "main_page/index.html", context)
 
