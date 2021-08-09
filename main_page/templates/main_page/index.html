@@ -116,16 +116,17 @@
 
     <h2> 유사한 광고 출력 나열</h2>
     {% for list in similar_ad_list %}
-            <h4> {{ list }} </h4>
+            <h4>  </h4>
             <!-- <iframe width="360" height="115" src = {{ list }} > </iframe> -->
             
-            <img src="http://img.youtube.com/vi/{{ list }}/mqdefault.jpg">  <h4>제목</h4>
+            <img src={{ list.ad_url }}>  <h4> {{list.ad_name}}</h4>
+            {{list.feedback_value}}
 
     {% endfor %}
 
     <h2> 위에 점수순으로 광고  나열</h2>
-    {% for list in feedback_value %}
-            <h4> {{ list }} </h4>
+    {% for list in similar_ad_name %}
+            <h4> 테스트 </h4>
     {% endfor %}
 
 
