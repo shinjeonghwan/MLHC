@@ -24,6 +24,29 @@ def index(request):
     keyword = wav_to_kakao_api(KAKAO_API_KEY())
     print(keyword)
 
+#--------------------------------케이스 3 가지처리해야함-----------------------------
+
+
+#---------------1. GET으로 받았을 때, 현재 get으로 선택된 영상 출력 및 이거와 관련된 연관 동영상 출력---------------
+#    if request.method == 'GET':
+#        ad_key = request.GET['ad_key']
+
+#        if ad_key == False:
+#            pass
+
+#        else:
+#            print("ad_key")
+#            print(ad_key)
+#            data = { 'stored_ad_url' : ad_key,
+#                   }
+
+#        return render(request, "main_page/index.html", data)
+#        context = {'stored_ad_url':stored_ad_url, 'url_list': url_list, 'selected_url': random_ad, 'selected_id' : random_ad_id, 'len': length,
+#                   'feedback_value': feedback_value, 'feedback_id': feedback_id, 'selected_ad_id_feedback_value' : random_ad_id_feedback_value}
+
+
+
+#---------------2. 음성파일이 없을 때, 랜덤으로 영상 출력 및 특정 조건으로 연관 영상들을 옆에 띄우기---------------
     if keyword == 0: #저장된 음성파일이 없으면
         url_list, url_list_id = watch_to_embed(stored_ad_url)
         url_list_len = len(url_list)
@@ -40,6 +63,8 @@ def index(request):
                    'feedback_value': feedback_value, 'feedback_id': feedback_id, 'selected_ad_id_feedback_value' : random_ad_id_feedback_value}
         return render(request, "main_page/index.html", context)
 
+
+#-------------3. 음성파일이 있을 때, 그거와 관련된 영상 출력 및 동일한 메인 태그에 대한 연관 영상 띄우기 ----------------
     else:     #음성파일이 있으면
         print("음성파일 있음")        #음성 파일이 있는데, 광고 DB에 전부 매칭되지 않는 음성인 경우 처리해주어야함. random_pick 과정을 함수화 해서, 위에도 쓰고, 여기도 쓰면 좋을듯
         pick, scored_list = selected_ad(keyword, stored_ad_url, length)
@@ -55,29 +80,27 @@ def index(request):
         ad_thumnail = "http://img.youtube.com/vi/" + ad_thumnail + "/mqdefault.jpg"
 
 
-
         picked_ad_url = picked_ad.ad_url.replace("/watch?v=","/embed/")
         print(picked_ad_url)
         picked_ad_feedback_value = picked_ad.feedback_value
 
-#관련 영상 썸네일 누름녀 새로운 ad.html로 넘어가서 거기서 영상 처리하는 걸로 하면 어떨까. 아니면 a태그에 ad.html?key=ad_value 형태로 하는거는 어떨까?
         for tag in keyword:
             print(tag)
             tmp_similar_ad = AD_LIST.objects.filter(main_key_word=tag).order_by('-feedback_value')
             similar_ad = tmp_similar_ad.values()
             print(similar_ad)
             if similar_ad:
-                print("keyword 픽")
                 for queryset_dict in similar_ad:
-                    print("HG")
                     modi_link = queryset_dict['ad_url']
                     modi_link = modi_link.split("/watch?v=")[1]
-                    modi_link = "http://img.youtube.com/vi/" + modi_link + "/mqdefault.jpg"
-                    queryset_dict.update(ad_url = modi_link)
-                    if modi_link == ad_thumnail:
+                    ad_link = "http://img.youtube.com/vi/" + modi_link + "/mqdefault.jpg"
+                    queryset_dict.update(tag3 = modi_link) #tag3를 임시로ad_key값을 위해  사용
+                    queryset_dict.update(ad_url = ad_link)
+                    if ad_link == ad_thumnail:
                         queryset_dict.update(ad_url = '')
                         queryset_dict.update(ad_name = '')
                         queryset_dict.update(feedback_value = '')
+                        queryset_dict.update(tag3 = '')
 
             else:
                 print("keyword 선택 안됨")
@@ -87,6 +110,8 @@ def index(request):
                    'scored_list' : scored_list, 'similar_ad_list' : similar_ad}
 
         return render(request, "main_page/index.html", context)
+
+
 
 def to_list(stored_ad_url):
     length = 0

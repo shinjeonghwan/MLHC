@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="http://www.youtube.com/player_api"></script>
 </head>
 
 <body>
@@ -28,6 +29,10 @@
 <button id="N_button" value="Negative" name="N">싫어요</button>
 
 </br></br></br>
+
+
+
+
 
 <script>
 /*
@@ -119,7 +124,7 @@
             <h4>  </h4>
             <!-- <iframe width="360" height="115" src = {{ list }} > </iframe> -->
             
-            <img src={{ list.ad_url }}>  <h4> {{list.ad_name}}</h4>
+            <a href = /main_page/?ad_key={{list.tag3}}> <img src= {{list.ad_url}}></a>  <h4> {{list.ad_name}}</h4>
             {{list.feedback_value}}
 
     {% endfor %}
