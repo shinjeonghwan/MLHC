@@ -28,22 +28,55 @@ def index(request):
 
 
 #---------------1. GET으로 받았을 때, 현재 get으로 선택된 영상 출력 및 이거와 관련된 연관 동영상 출력---------------
-#    if request.method == 'GET':
-#        ad_key = request.GET['ad_key']
+    if request.method == 'GET':
+        ad_key = request.GET.get('ad_key')
 
-#        if ad_key == False:
-#            pass
+        if ad_key == None:
+            pass
 
-#        else:
-#            print("ad_key")
-#            print(ad_key)
-#            data = { 'stored_ad_url' : ad_key,
-#                   }
+        else:
+            print("ad_key")
+            print(ad_key)
+            ad_key = "https://www.youtube.com/watch?v=" + ad_key
+            print(ad_key)
+            GET_ad_keyword = AD_LIST.objects.get(ad_url = ad_key).main_key_word
+            GET_ad_id =  AD_LIST.objects.get(ad_url = ad_key).id
+            GET_ad_name = AD_LIST.objects.get(ad_url = ad_key).ad_name
+            GET_ad_feedback_value = AD_LIST.objects.get(ad_url = ad_key).feedback_value
+            print(GET_ad_keyword)
+            GET_ad_url = ad_key.replace("/watch?v=","/embed/")
 
-#        return render(request, "main_page/index.html", data)
-#        context = {'stored_ad_url':stored_ad_url, 'url_list': url_list, 'selected_url': random_ad, 'selected_id' : random_ad_id, 'len': length,
-#                   'feedback_value': feedback_value, 'feedback_id': feedback_id, 'selected_ad_id_feedback_value' : random_ad_id_feedback_value}
+            str_split = GET_ad_url.split("/embed/")
+            ad_thumnail = str_split[1]
+            print("AAAA+A+A")
+            print(str_split)
+            print(ad_thumnail)
+            ad_thumnail = "http://img.youtube.com/vi/" + ad_thumnail + "/mqdefault.jpg"
 
+            tmp_similar_ad = AD_LIST.objects.filter(main_key_word=GET_ad_keyword).order_by('-feedback_value')
+            similar_ad = tmp_similar_ad.values()
+            print("similar_ad")
+            print(similar_ad)
+            if similar_ad:
+                for queryset_dict in similar_ad:
+                    modi_link = queryset_dict['ad_url']
+                    modi_link = modi_link.split("/watch?v=")[1]
+                    ad_link = "http://img.youtube.com/vi/" + modi_link + "/mqdefault.jpg"
+                    queryset_dict.update(tag3 = modi_link) #tag3를 임시로ad_key값을 위해  사용
+                    queryset_dict.update(ad_url = ad_link)
+                    if ad_link == ad_thumnail:
+                        queryset_dict.update(ad_url = '')
+                        queryset_dict.update(ad_name = '')
+                        queryset_dict.update(feedback_value = '')
+                        queryset_dict.update(tag3 = '')
+
+            else:
+                print("keyword 선택 안됨")
+                pass
+
+            context = {'selected_url': GET_ad_url, 'selected_name' : GET_ad_name  , 'selected_id' : GET_ad_id, 'similar_ad_list' : similar_ad,
+                       'selected_ad_id_feedback_value' : GET_ad_feedback_value}
+            return render(request, "main_page/index.html", context)
 
 
 #---------------2. 음성파일이 없을 때, 랜덤으로 영상 출력 및 특정 조건으로 연관 영상들을 옆에 띄우기---------------
@@ -57,10 +90,44 @@ def index(request):
         random_ad_id = url_list_id[random_pick]
         random_ad_id_feedback_value = AD_LIST.objects.get(id = random_ad_id).feedback_value
 
+        random_ad_keyword = AD_LIST.objects.get(id = random_ad_id).main_key_word
+        random_ad_name = AD_LIST.objects.get(id = random_ad_id).ad_name
+
+        str_split = random_ad.split("/embed/")
+        ad_thumnail = str_split[1]
+        print("VVCVDF")
+        print(str_split)
+        print(ad_thumnail)
+        ad_thumnail = "http://img.youtube.com/vi/" + ad_thumnail + "/mqdefault.jpg"
+
+        tmp_similar_ad = AD_LIST.objects.filter(main_key_word=random_ad_keyword).order_by('-feedback_value')
+        similar_ad = tmp_similar_ad.values()
+        print("similar_ad")
+        print(similar_ad)
+        if similar_ad:
+            for queryset_dict in similar_ad:
+                modi_link = queryset_dict['ad_url']
+                modi_link = modi_link.split("/watch?v=")[1]
+                ad_link = "http://img.youtube.com/vi/" + modi_link + "/mqdefault.jpg"
+                queryset_dict.update(tag3 = modi_link) #tag3를 임시로ad_key값을 위해  사용
+                queryset_dict.update(ad_url = ad_link)
+                if ad_link == ad_thumnail:
+                    queryset_dict.update(ad_url = '')
+                    queryset_dict.update(ad_name = '')
+                    queryset_dict.update(feedback_value = '')
+                    queryset_dict.update(tag3 = '')
+
+        else:
+            print("keyword 선택 안됨")
+            pass
+
+
         feedback_value, feedback_id = Check_Feedback_value(stored_ad_url)
 
-        context = {'stored_ad_url':stored_ad_url, 'url_list': url_list, 'selected_url': random_ad, 'selected_id' : random_ad_id, 'len': length,
-                   'feedback_value': feedback_value, 'feedback_id': feedback_id, 'selected_ad_id_feedback_value' : random_ad_id_feedback_value}
+        context = {'selected_url': random_ad, 'selected_name' : random_ad_name, 'selected_id' : random_ad_id, 'similar_ad_list' : similar_ad,
+                   'selected_ad_id_feedback_value' : random_ad_id_feedback_value}
+
+
         return render(request, "main_page/index.html", context)
 
 
@@ -71,6 +138,7 @@ def index(request):
         print(keyword)
 
         picked_ad = AD_LIST.objects.get(id=pick)
+        picked_ad_name = picked_ad.ad_name
         picked_ad_url = picked_ad.ad_url
         str_split = picked_ad_url.split("/watch?v=")
         ad_thumnail = str_split[1]
@@ -106,8 +174,8 @@ def index(request):
                 print("keyword 선택 안됨")
                 pass
 
-        context = {'selected_url': picked_ad_url, 'selected_id' : pick, 'selected_ad_id_feedback_value' : picked_ad_feedback_value,
-                   'scored_list' : scored_list, 'similar_ad_list' : similar_ad}
+        context = {'selected_url': picked_ad_url, 'selected_name' : picked_ad_name,'selected_id' : pick, 'selected_ad_id_feedback_value' : picked_ad_feedback_value,
+                   'similar_ad_list' : similar_ad}
 
         return render(request, "main_page/index.html", context)
 
