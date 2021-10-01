@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script src="http://www.youtube.com/iframe_api"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    
 </head>
 
 <body>
@@ -13,7 +14,6 @@
 
 <h1> 선택된 광고 게시: < {{selected_name}} ></h1></br>
 <h2> 선택된 태그 : < {% for list in scored_list %} #{{list}}   {% endfor %}></h2></br>
-
 
 <!--   <iframe width="560" height="315" src = {{ selected_url }} > </iframe>  -->
 
@@ -69,35 +69,6 @@
 
 </br></br></br>
 
-
-<script>
-/*
-   navigator.mediaDevices.getUserMedia({audio:true}).then(stream => {audio_handler(stream)});
-    var audio_chunks = [];
-    audio_handler = function(stream){
-    rec = new MediaRecorder(stream, {mimeType : 'audio/webm', codecs : "opus"});
-        rec.ondataavailable = function(e){
-            audio_chunks.push(e.data);
-        }
-    }
-    //on rec.stop()
-    var blob = new Blob(audio_chunks, {'type':'audio/wav; codecs=opus'});
-    console.log(blob);
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "upload/", true);
-    var data = new FormData();
-    data.append('data', blob, 'audio_blob');
-    xhttp.send(data);
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            console.log(this.responseText);
-         }
-    };
-*/
- </script>
-
-
-
 <script> 
     $('#P_button').click(function(){
         console.log('hhhhiQQ')
@@ -144,6 +115,19 @@
     <ol id="recordingsList"></ol>
     <script src="/static/js/recorder.js"></script>
     <script src= "/static/js/app.js"></script>
+
+<script>
+
+    window.onload = function(){
+                    startRecording();
+                    window.setTimeout(stopRecording(),5000);
+}
+
+//    timeoutID = window.setTimeout(startRecording(), 3000);
+//    timeoutID2 = window.setTimeout(stopRecording(), 5000);
+//    window.clearTimeout(timeoutID);
+
+</script>
 
 
 
