@@ -11,6 +11,8 @@ from django.conf import settings
 
 from main_page.key import KAKAO_API_KEY
 
+import os
+
 
 def index(request):
     print("index.view start!!!")
@@ -37,6 +39,7 @@ def index(request):
         else:
             print("ad_key")
             print(ad_key)
+            GET_ad_key = ad_key
             ad_key = "https://www.youtube.com/watch?v=" + ad_key
             print(ad_key)
             GET_ad_keyword = AD_LIST.objects.get(ad_url = ad_key).main_key_word
@@ -74,8 +77,8 @@ def index(request):
                 print("keyword 선택 안됨")
                 pass
 
-            context = {'selected_url': GET_ad_url, 'selected_name' : GET_ad_name  , 'selected_id' : GET_ad_id, 'similar_ad_list' : similar_ad,
-                       'selected_ad_id_feedback_value' : GET_ad_feedback_value}
+            context = {'selected_url': GET_ad_key, 'selected_name' : GET_ad_name  , 'selected_id' : GET_ad_id, 'similar_ad_list' : similar_ad,
+                       'selected_ad_id_feedback_value' : GET_ad_feedback_value, 'scored_list' : GET_ad_keyword}
             return render(request, "main_page/index.html", context)
 
 
@@ -95,8 +98,9 @@ def index(request):
 
         str_split = random_ad.split("/embed/")
         ad_thumnail = str_split[1]
+        random_ad_key = str_split[1]
         print("VVCVDF")
-        print(str_split)
+        print(str_split[1])
         print(ad_thumnail)
         ad_thumnail = "http://img.youtube.com/vi/" + ad_thumnail + "/mqdefault.jpg"
 
@@ -124,8 +128,8 @@ def index(request):
 
         feedback_value, feedback_id = Check_Feedback_value(stored_ad_url)
 
-        context = {'selected_url': random_ad, 'selected_name' : random_ad_name, 'selected_id' : random_ad_id, 'similar_ad_list' : similar_ad,
-                   'selected_ad_id_feedback_value' : random_ad_id_feedback_value}
+        context = {'selected_url': random_ad_key, 'selected_name' : random_ad_name, 'selected_id' : random_ad_id, 'similar_ad_list' : similar_ad,
+                   'selected_ad_id_feedback_value' : random_ad_id_feedback_value, 'scored_list' : random_ad_keyword}
 
 
         return render(request, "main_page/index.html", context)
@@ -141,6 +145,7 @@ def index(request):
         picked_ad_name = picked_ad.ad_name
         picked_ad_url = picked_ad.ad_url
         str_split = picked_ad_url.split("/watch?v=")
+        picked_ad_key = str_split[1]
         ad_thumnail = str_split[1]
         print("FGHDF")
         print(str_split)
@@ -174,8 +179,8 @@ def index(request):
                 print("keyword 선택 안됨")
                 pass
 
-        context = {'selected_url': picked_ad_url, 'selected_name' : picked_ad_name,'selected_id' : pick, 'selected_ad_id_feedback_value' : picked_ad_feedback_value,
-                   'similar_ad_list' : similar_ad}
+        context = {'selected_url': picked_ad_key, 'selected_name' : picked_ad_name,'selected_id' : pick, 'selected_ad_id_feedback_value' : picked_ad_feedback_value,
+                   'similar_ad_list' : similar_ad, 'scored_list' : scored_list}
 
         return render(request, "main_page/index.html", context)
 
@@ -197,7 +202,8 @@ def watch_to_embed(stored_ad_url):
     return list_of_ad_url, list_of_ad_id
 
 def audio(request):
-    return render(request, "main_page/audio.html")
+#    return render(request, "main_page/audio.html")
+    return render(request, "main_page/iframe_api.html")
 
 def P_feedback(request):
 #    if request.is_ajax():
@@ -271,6 +277,7 @@ def wav_to_kakao_api(rest_api_key):
         print(result['value'])
 
         keyword = string_to_keyword(result['value'])
+        os.remove("./t2est.wav")
         return keyword
 
     except:
