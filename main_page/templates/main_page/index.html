@@ -45,10 +45,17 @@
 
       var done = false;
       function onPlayerStateChange(event) {
+        if(event.data === 1)
+        {
+            startRecording();
+        }
          if(event.data === 0)
          {
-          //window.location = "http://2021-capstone-mlhc.com:8000/main_page/";
-          window.location = "https://2021-capstone-mlhc.com/main_page/";
+          stopRecording();
+          setTimeout(function(){
+              window.location = "https://2021-capstone-mlhc.com/main_page/";
+          },500);
+         //  window.location = "https://2021-capstone-mlhc.com/main_page/";
         }
       }
       function stopVideo() {
@@ -115,21 +122,6 @@
     <ol id="recordingsList"></ol>
     <script src="/static/js/recorder.js"></script>
     <script src= "/static/js/app.js"></script>
-
-<script>
-
-    window.onload = function(){
-                    startRecording();
-                    window.setTimeout(stopRecording(),5000);
-}
-
-//    timeoutID = window.setTimeout(startRecording(), 3000);
-//    timeoutID2 = window.setTimeout(stopRecording(), 5000);
-//    window.clearTimeout(timeoutID);
-
-</script>
-
-
 
 
 </br></br></br>

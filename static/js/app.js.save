@@ -148,8 +148,7 @@ function createDownloadLink(blob) {
 	upload.innerHTML = "Upload";
 
 
-/*      업로드 버튼 클릭 안해도 자동으로 업로드 되도록 처리.
-	upload.addEventListener("click", function(event){
+/*	upload.addEventListener("click", function(event){
 		  var xhr=new XMLHttpRequest();
 		  xhr.onload=function(e) {
 		      if(this.readyState === 4) {
@@ -163,16 +162,19 @@ function createDownloadLink(blob) {
 	})
 */
 
-        var xhr=new XMLHttpRequest();
-        xhr.onload=function(e) {
-             if(this.readyState === 4) {
-                  console.log("Server returned!!: ",e.target.responseText);
-             }
+
+        //click 이벤트 리스너 없이, 업로드 함수 호출되면 업로드 하기.
+        var xhr = new XMLHttpRequest();
+        xhr.onload=function(e){
+            if(this.readyState === 4){
+                console.log("Server returned!!: ",e.target.responseText);
+            }
         };
-        var fd=new FormData();
+        var fd = new FormDate();
         fd.append("audio_data",blob, filename);
         xhr.open("POST","/main_page/upload/",true);
         xhr.send(fd);
+
 
 	li.appendChild(document.createTextNode (" "))//add a space in between
 	li.appendChild(upload)//add the upload link to li

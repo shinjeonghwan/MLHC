@@ -37,23 +37,16 @@ def index(request):
             pass
 
         else:
-            print("ad_key")
-            print(ad_key)
             GET_ad_key = ad_key
             ad_key = "https://www.youtube.com/watch?v=" + ad_key
-            print(ad_key)
             GET_ad_keyword = AD_LIST.objects.get(ad_url = ad_key).main_key_word
             GET_ad_id =  AD_LIST.objects.get(ad_url = ad_key).id
             GET_ad_name = AD_LIST.objects.get(ad_url = ad_key).ad_name
             GET_ad_feedback_value = AD_LIST.objects.get(ad_url = ad_key).feedback_value
-            print(GET_ad_keyword)
             GET_ad_url = ad_key.replace("/watch?v=","/embed/")
 
             str_split = GET_ad_url.split("/embed/")
             ad_thumnail = str_split[1]
-            print("AAAA+A+A")
-            print(str_split)
-            print(ad_thumnail)
             ad_thumnail = "http://img.youtube.com/vi/" + ad_thumnail + "/mqdefault.jpg"
 
             tmp_similar_ad = AD_LIST.objects.filter(main_key_word=GET_ad_keyword).order_by('-feedback_value')
@@ -99,15 +92,11 @@ def index(request):
         str_split = random_ad.split("/embed/")
         ad_thumnail = str_split[1]
         random_ad_key = str_split[1]
-        print("VVCVDF")
-        print(str_split[1])
-        print(ad_thumnail)
         ad_thumnail = "http://img.youtube.com/vi/" + ad_thumnail + "/mqdefault.jpg"
 
         tmp_similar_ad = AD_LIST.objects.filter(main_key_word=random_ad_keyword).order_by('-feedback_value')
         similar_ad = tmp_similar_ad.values()
-        print("similar_ad")
-        print(similar_ad)
+
         if similar_ad:
             for queryset_dict in similar_ad:
                 modi_link = queryset_dict['ad_url']
@@ -139,7 +128,6 @@ def index(request):
     else:     #음성파일이 있으면
         print("음성파일 있음")        #음성 파일이 있는데, 광고 DB에 전부 매칭되지 않는 음성인 경우 처리해주어야함. random_pick 과정을 함수화 해서, 위에도 쓰고, 여기도 쓰면 좋을듯
         pick, scored_list = selected_ad(keyword, stored_ad_url, length)
-        print(keyword)
 
         picked_ad = AD_LIST.objects.get(id=pick)
         picked_ad_name = picked_ad.ad_name
@@ -147,21 +135,15 @@ def index(request):
         str_split = picked_ad_url.split("/watch?v=")
         picked_ad_key = str_split[1]
         ad_thumnail = str_split[1]
-        print("FGHDF")
-        print(str_split)
-        print(ad_thumnail)
         ad_thumnail = "http://img.youtube.com/vi/" + ad_thumnail + "/mqdefault.jpg"
 
 
         picked_ad_url = picked_ad.ad_url.replace("/watch?v=","/embed/")
-        print(picked_ad_url)
         picked_ad_feedback_value = picked_ad.feedback_value
 
         for tag in keyword:
-            print(tag)
             tmp_similar_ad = AD_LIST.objects.filter(main_key_word=tag).order_by('-feedback_value')
             similar_ad = tmp_similar_ad.values()
-            print(similar_ad)
             if similar_ad:
                 for queryset_dict in similar_ad:
                     modi_link = queryset_dict['ad_url']
