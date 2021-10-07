@@ -24,6 +24,7 @@ def index(request):
 
 #    keyword = wav_to_kakao_api(settings.KAKAO_API_KEY)   #rest_api == SECRET_KEY
     keyword = wav_to_kakao_api(KAKAO_API_KEY())
+    print("keyword")
     print(keyword)
 
 #--------------------------------케이스 3 가지처리해야함-----------------------------
@@ -128,6 +129,9 @@ def index(request):
     else:     #음성파일이 있으면
         print("음성파일 있음")        #음성 파일이 있는데, 광고 DB에 전부 매칭되지 않는 음성인 경우 처리해주어야함. random_pick 과정을 함수화 해서, 위에도 쓰고, 여기도 쓰면 좋을듯
         pick, scored_list = selected_ad(keyword, stored_ad_url, length)
+        print("scored_list")
+        print(type(scored_list))
+        print(scored_list)
 
         picked_ad = AD_LIST.objects.get(id=pick)
         picked_ad_name = picked_ad.ad_name
@@ -137,11 +141,12 @@ def index(request):
         ad_thumnail = str_split[1]
         ad_thumnail = "http://img.youtube.com/vi/" + ad_thumnail + "/mqdefault.jpg"
 
-
         picked_ad_url = picked_ad.ad_url.replace("/watch?v=","/embed/")
         picked_ad_feedback_value = picked_ad.feedback_value
 
-        for tag in keyword:
+
+#        for tag in keyword:
+        for tag in scored_list:
             tmp_similar_ad = AD_LIST.objects.filter(main_key_word=tag).order_by('-feedback_value')
             similar_ad = tmp_similar_ad.values()
             if similar_ad:
@@ -156,10 +161,35 @@ def index(request):
                         queryset_dict.update(ad_name = '')
                         queryset_dict.update(feedback_value = '')
                         queryset_dict.update(tag3 = '')
-
             else:
                 print("keyword 선택 안됨")
                 pass
+
+        if len(similar_ad) == 0:
+             tmp_similar_ad = AD_LIST.objects.filter(main_key_word=scored_list).order_by('-feedback_value')   #scored_list가 리스트 형태로 변경되면 이 구문 자체를 엎어야할 가능성 생김.
+             similar_ad = tmp_similar_ad.values()
+             if similar_ad:
+                 for queryset_dict in similar_ad:
+                     modi_link = queryset_dict['ad_url']
+                     modi_link = modi_link.split("/watch?v=")[1]
+                     ad_link = "http://img.youtube.com/vi/" + modi_link + "/mqdefault.jpg"
+                     queryset_dict.update(tag3 = modi_link) #tag3를 임시로ad_key값을 위해  사용
+                     queryset_dict.update(ad_url = ad_link)
+                     if ad_link == ad_thumnail:
+                         queryset_dict.update(ad_url = '')
+                         queryset_dict.update(ad_name = '')
+                         queryset_dict.update(feedback_value = '')
+                         queryset_dict.update(tag3 = '')
+
+             else:
+                 print("keyword 선택 안됨")
+                 print("scored_list로도 처리 안됨") #단순하게 키워드 하나 가지고 처리되는 케이스
+                 pass
+
+
+
+
+
 
         context = {'selected_url': picked_ad_key, 'selected_name' : picked_ad_name,'selected_id' : pick, 'selected_ad_id_feedback_value' : picked_ad_feedback_value,
                    'similar_ad_list' : similar_ad, 'scored_list' : scored_list}
@@ -285,9 +315,6 @@ def string_to_keyword(string):    #keyword로 쪼갤 아이디어 함수
     return demo
 
 
-
-
-
 def selected_ad(keyword, stored_ad_url, length):         #태그매칭으로 직접 광고를 선택할 함수       #현재는 전수조사 형태로 pick 합시다.
 #결국 결정된 ad의 id값만 따서 리턴해주면 됨.
     tmp_list = []
@@ -316,8 +343,25 @@ def selected_ad(keyword, stored_ad_url, length):         #태그매칭으로 직
 
     print(scored_list)
 
+
+
+    if len(scored_list) == 0:
+        url_list, url_list_id = watch_to_embed(stored_ad_url)
+        url_list_len = len(url_list)
+
+        random_pick = random.randint(0, url_list_len -1)
+        random_ad = url_list[random_pick]
+
+        random_ad_id = url_list_id[random_pick]
+        #random_ad_id_feedback_value = AD_LIST.objects.get(id = random_ad_id).feedback_value
+
+        random_ad_keyword = AD_LIST.objects.get(id = random_ad_id).main_key_word
+        #random_ad_name = AD_LIST.objects.get(id = random_ad_id).ad_name
+
+        return random_ad_id, random_ad_keyword
+
+
 #    if max(ad_keyword_cnt) == 0:     #이 부분은 나중에 음성에서 뽑힌 키워드랑 광고랑전혀 매칭 안될 때, 처리하기위한 구문
-#        result = 0
 #    else:
 #        result = tmp_id_list[ad_keyword_cnt.index(max(ad_keyword_cnt))]
 
