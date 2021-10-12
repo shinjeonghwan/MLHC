@@ -87,7 +87,7 @@ def index(request):
         random_ad_id = url_list_id[random_pick]
         random_ad_id_feedback_value = AD_LIST.objects.get(id = random_ad_id).feedback_value
 
-        random_ad_keyword = AD_LIST.objects.get(id = random_ad_id).main_key_word
+        random_ad_keyword = [AD_LIST.objects.get(id = random_ad_id).main_key_word]
         random_ad_name = AD_LIST.objects.get(id = random_ad_id).ad_name
 
         str_split = random_ad.split("/embed/")
@@ -95,7 +95,7 @@ def index(request):
         random_ad_key = str_split[1]
         ad_thumnail = "http://img.youtube.com/vi/" + ad_thumnail + "/mqdefault.jpg"
 
-        tmp_similar_ad = AD_LIST.objects.filter(main_key_word=random_ad_keyword).order_by('-feedback_value')
+        tmp_similar_ad = AD_LIST.objects.filter(main_key_word=random_ad_keyword[0]).order_by('-feedback_value')
         similar_ad = tmp_similar_ad.values()
 
         if similar_ad:
@@ -114,6 +114,9 @@ def index(request):
         else:
             print("keyword 선택 안됨")
             pass
+
+        print("Test3")
+        print(similar_ad)
 
 
         feedback_value, feedback_id = Check_Feedback_value(stored_ad_url)
@@ -135,6 +138,7 @@ def index(request):
 
         picked_ad = AD_LIST.objects.get(id=pick)
         picked_ad_name = picked_ad.ad_name
+        picked_ad_main_keyword = picked_ad.main_key_word
         picked_ad_url = picked_ad.ad_url
         str_split = picked_ad_url.split("/watch?v=")
         picked_ad_key = str_split[1]
@@ -144,26 +148,26 @@ def index(request):
         picked_ad_url = picked_ad.ad_url.replace("/watch?v=","/embed/")
         picked_ad_feedback_value = picked_ad.feedback_value
 
+        tmp_similar_ad = AD_LIST.objects.filter(main_key_word=picked_ad_main_keyword).order_by('-feedback_value')
+        similar_ad = tmp_similar_ad.values()
 
-#        for tag in keyword:
-        for tag in scored_list:
-            tmp_similar_ad = AD_LIST.objects.filter(main_key_word=tag).order_by('-feedback_value')
-            similar_ad = tmp_similar_ad.values()
-            if similar_ad:
-                for queryset_dict in similar_ad:
-                    modi_link = queryset_dict['ad_url']
-                    modi_link = modi_link.split("/watch?v=")[1]
-                    ad_link = "http://img.youtube.com/vi/" + modi_link + "/mqdefault.jpg"
-                    queryset_dict.update(tag3 = modi_link) #tag3를 임시로ad_key값을 위해  사용
-                    queryset_dict.update(ad_url = ad_link)
-                    if ad_link == ad_thumnail:
-                        queryset_dict.update(ad_url = '')
-                        queryset_dict.update(ad_name = '')
-                        queryset_dict.update(feedback_value = '')
-                        queryset_dict.update(tag3 = '')
-            else:
-                print("keyword 선택 안됨")
-                pass
+        if similar_ad:
+            for queryset_dict in similar_ad:
+                modi_link = queryset_dict['ad_url']
+                modi_link = modi_link.split("/watch?v=")[1]
+                ad_link = "http://img.youtube.com/vi/" + modi_link + "/mqdefault.jpg"
+                queryset_dict.update(tag3 = modi_link) #tag3를 임시로ad_key값을 위해  사용
+                queryset_dict.update(ad_url = ad_link)
+                if ad_link == ad_thumnail:
+                    queryset_dict.update(ad_url = '')
+                    queryset_dict.update(ad_name = '')
+                    queryset_dict.update(feedback_value = '')
+                    queryset_dict.update(tag3 = '')
+
+        else:
+            print("keyword 선택 안됨")
+            pass
+
 
         if len(similar_ad) == 0:
              tmp_similar_ad = AD_LIST.objects.filter(main_key_word=scored_list).order_by('-feedback_value')   #scored_list가 리스트 형태로 변경되면 이 구문 자체를 엎어야할 가능성 생김.
@@ -185,10 +189,6 @@ def index(request):
                  print("keyword 선택 안됨")
                  print("scored_list로도 처리 안됨") #단순하게 키워드 하나 가지고 처리되는 케이스
                  pass
-
-
-
-
 
 
         context = {'selected_url': picked_ad_key, 'selected_name' : picked_ad_name,'selected_id' : pick, 'selected_ad_id_feedback_value' : picked_ad_feedback_value,
@@ -338,8 +338,7 @@ def selected_ad(keyword, stored_ad_url, length):         #태그매칭으로 직
                 #여기서는 각 ad_list 에 count + 1    제일 많이 카운트 된 순위로 결정, 동점자 발생 시, 가장 앞쪽  순서로 처리
                 if tmp_list[j] not in scored_list:
                     scored_list.append(tmp_list[j])
-        tmp_list =[]
-
+        tmp_list = []
 
     print(scored_list)
 
@@ -355,7 +354,8 @@ def selected_ad(keyword, stored_ad_url, length):         #태그매칭으로 직
         random_ad_id = url_list_id[random_pick]
         #random_ad_id_feedback_value = AD_LIST.objects.get(id = random_ad_id).feedback_value
 
-        random_ad_keyword = AD_LIST.objects.get(id = random_ad_id).main_key_word
+        random_ad_keyword = []
+        random_ad_keyword.append(AD_LIST.objects.get(id = random_ad_id).main_key_word)
         #random_ad_name = AD_LIST.objects.get(id = random_ad_id).ad_name
 
         return random_ad_id, random_ad_keyword
