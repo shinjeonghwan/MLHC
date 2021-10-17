@@ -1,21 +1,22 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
     
 </head>
 
 <body>
-<h1><a href = https://2021-capstone-mlhc.com/main_page/>WELCOME MLHC</a></h1>
 
+<div id="main_page">
+<a href = https://2021-capstone-mlhc.com/main_page/>WELCOME MLHC</a>
 <h1> 선택된 광고 게시: < {{selected_name}} ></h1></br>
 <h2> 선택된 태그 : < {% for list in scored_list %} #{{list}}   {% endfor %}></h2></br>
-
-<!--   <iframe width="560" height="315" src = {{ selected_url }} > </iframe>  -->
 
 <div id="player"></div>
 
@@ -123,32 +124,22 @@
     <script src="/static/js/recorder.js"></script>
     <script src= "/static/js/app.js"></script>
 
-
-</br></br></br>
-
+</div>
 
 
 
-</br><h1> 저장되어 있는 광고갯수 {{len}}</h1></br>
-
+<div id="similar_ad_list">
     <h2> 유사한 광고 출력 나열</h2>
     {% for list in similar_ad_list %}
-            <h4>  </h4>
-            <!-- <iframe width="360" height="115" src = {{ list }} > </iframe> -->
-            
-            <a href = /main_page/?ad_key={{list.tag3}}> <img src= {{list.ad_url}}></a>  <h4> {{list.ad_name}}</h4>
-            {{list.feedback_value}}
-
+    <div id="similar_ad_img">
+        <a href = /main_page/?ad_key={{list.tag3}}> <img width=180 src= {{list.ad_url}} ></a> 
+        <div id="similar_ad_name">
+             <font size="4"> {{list.ad_name}}</font> </br> <font size="2" style="color:gray;">{{list.name}}</font>
+        </div>
+</div>
+     </br>
     {% endfor %}
-
-    <h2> 위에 점수순으로 광고  나열</h2>
-    {% for list in similar_ad_name %}
-            <h4> 테스트 </h4>
-    {% endfor %}
-
-
-
-
+</div>
 
 </body>
 </html>

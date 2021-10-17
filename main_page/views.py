@@ -63,6 +63,7 @@ def index(request):
                     queryset_dict.update(ad_url = ad_link)
                     if ad_link == ad_thumnail:
                         queryset_dict.update(ad_url = '')
+                        queryset_dict.update(name = '')
                         queryset_dict.update(ad_name = '')
                         queryset_dict.update(feedback_value = '')
                         queryset_dict.update(tag3 = '')
@@ -107,6 +108,7 @@ def index(request):
                 queryset_dict.update(ad_url = ad_link)
                 if ad_link == ad_thumnail:
                     queryset_dict.update(ad_url = '')
+                    queryset_dict.update(name = '')
                     queryset_dict.update(ad_name = '')
                     queryset_dict.update(feedback_value = '')
                     queryset_dict.update(tag3 = '')
@@ -160,6 +162,7 @@ def index(request):
                 queryset_dict.update(ad_url = ad_link)
                 if ad_link == ad_thumnail:
                     queryset_dict.update(ad_url = '')
+                    queryset_dict.update(name = '')
                     queryset_dict.update(ad_name = '')
                     queryset_dict.update(feedback_value = '')
                     queryset_dict.update(tag3 = '')
