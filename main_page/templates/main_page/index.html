@@ -15,8 +15,8 @@
 
 <div id="main_page">
 <a href = https://2021-capstone-mlhc.com/main_page/>WELCOME MLHC</a>
-<h1> 선택된 광고 게시: < {{selected_name}} ></h1></br>
-<h2> 선택된 태그 : < {% for list in scored_list %} #{{list}}   {% endfor %}></h2></br>
+<h1> 광고 제목: < {{selected_name}} ></h1>
+<h2> 선택된 태그 : < {% for list in scored_list %} #{{list}}   {% endfor %}></h2>
 
 <div id="player"></div>
 
@@ -30,8 +30,8 @@
       var player;
       function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
-          height: '315',
-          width: '560',
+          height: '480',
+          width: '720',
           videoId: '{{selected_url}}',
           events: {
             'onReady': onPlayerReady,
@@ -67,10 +67,7 @@
 
 <h2> 선택된 광고의 피드백 값< {{selected_ad_id_feedback_value}} ></h2></br>
 
-
-<h3>테스트</h3></br>
 <span id="feedback_value">{{selected_ad_id_feedback_value}}</span></br>
-
 
 <button id="P_button" value="Positive">좋아요</button>
 <button id="N_button" value="Negative" name="N">싫어요</button>
@@ -129,15 +126,18 @@
 
 
 <div id="similar_ad_list">
-    <h2> 유사한 광고 출력 나열</h2>
+    <h2> 비슷한 광고</h2>
     {% for list in similar_ad_list %}
+    {% if list.ad_url != "" %}
     <div id="similar_ad_img">
         <a href = /main_page/?ad_key={{list.tag3}}> <img width=180 src= {{list.ad_url}} ></a> 
         <div id="similar_ad_name">
-             <font size="4"> {{list.ad_name}}</font> </br> <font size="2" style="color:gray;">{{list.name}}</font>
+            <a href = /main_page/?ad_key={{list.tag3}}>  <font size="4"> {{list.ad_name}}</font> </a> </br> <font size="2" style="color:gray;">{{list.name}}</font>
         </div>
 </div>
      </br>
+    {% else %}
+    {% endif %}
     {% endfor %}
 </div>
 

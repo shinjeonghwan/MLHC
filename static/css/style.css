@@ -1,1 +1,27 @@
+body{
+    width: 90%;
+    margin: 10px auto;
+    display:flex;
+}
 
+#main_page {
+    flex:1;
+    margin-left: 30%;
+    width:80%;
+}
+
+#similar_ad_list{
+    flex:1;
+    margin-left: 10%;
+    width:20%;
+}
+
+#similar_ad_img {
+    width: 50%;
+    display:flex;
+}
+
+#similar_ad_name{
+    margin-left:4%;
+    flex:none;
+}

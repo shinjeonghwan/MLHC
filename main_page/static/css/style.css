@@ -6,12 +6,14 @@ body{
 
 #main_page {
     flex:1;
-    width:50%;
+    margin-left: 30%;
+    width:80%;
 }
 
 #similar_ad_list{
     flex:1;
-    width:30%;
+    margin-left: 10%;
+    width:20%;
 }
 
 #similar_ad_img {
@@ -20,5 +22,6 @@ body{
 }
 
 #similar_ad_name{
+    margin-left:4%;
     flex:none;
 }
