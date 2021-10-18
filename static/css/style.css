@@ -10,6 +10,13 @@ body{
     width:80%;
 }
 
+#buttons_formats {
+    display:none;
+
+
+}
+
+
 #similar_ad_list{
     flex:1;
     margin-left: 10%;
@@ -23,5 +30,6 @@ body{
 
 #similar_ad_name{
     margin-left:4%;
+    width:100%;
     flex:none;
 }

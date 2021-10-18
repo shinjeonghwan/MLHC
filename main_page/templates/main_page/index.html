@@ -32,6 +32,7 @@
         player = new YT.Player('player', {
           height: '480',
           width: '720',
+          playerVars: {'rel': 0},
           videoId: '{{selected_url}}',
           events: {
             'onReady': onPlayerReady,
@@ -107,8 +108,7 @@
 </script>
 
 
-
-
+<div id="buttons_formats">
 <div id="controls">
     <button id="recordButton">Record</button>
     <button id="pauseButton" disabled>Pause</button>
@@ -120,8 +120,9 @@
     <ol id="recordingsList"></ol>
     <script src="/static/js/recorder.js"></script>
     <script src= "/static/js/app.js"></script>
-
 </div>
+</div>
+
 
 
 
