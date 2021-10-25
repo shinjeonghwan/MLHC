@@ -16,12 +16,14 @@ body{
 
 #similar_ad_list{
     flex:1;
-    margin-left: 10%;
+    margin-left: 5%;
     margin-right: 10%;
+    border-left:1px solid black;
 }
 
 #similar_ad_img {
     width: 50%;
+    margin-left:5%;
     display:flex;
 }
 

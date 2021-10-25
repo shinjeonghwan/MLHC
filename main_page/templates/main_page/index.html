@@ -15,9 +15,6 @@
 
 <div id="main_page">
 <a href = https://2021-capstone-mlhc.com/main_page/>WELCOME MLHC</a>
-<h1> 광고 제목: < {{selected_name}} ></h1>
-<h2> 선택된 태그 : < {% for list in scored_list %} #{{list}}   {% endfor %}></h2>
-
 <div id="player"></div>
 
 <script>
@@ -30,8 +27,8 @@
       var player;
       function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
-          height: '480',
-          width: '720',
+          height: '680',
+          width: '960',
           playerVars: {'rel': 0},
           videoId: '{{selected_url}}',
           events: {
@@ -65,10 +62,10 @@
       }
     </script>
 
+<h1> < {{selected_name}} ></h1>
+<h2> 선택된 태그 : < {% for list in scored_list %} #{{list}}   {% endfor %}></h2>
 
-<h2> 선택된 광고의 피드백 값< {{selected_ad_id_feedback_value}} ></h2></br>
-
-<span id="feedback_value">{{selected_ad_id_feedback_value}}</span></br>
+<h2> 선택된 광고의 피드백 값< {{selected_ad_id_feedback_value}} ></h2>
 
 <button id="P_button" value="Positive">좋아요</button>
 <button id="N_button" value="Negative" name="N">싫어요</button>
