@@ -46,13 +46,20 @@
       function onPlayerStateChange(event) {
         if(event.data === 1)
         {
+            console.log("played"); //setInterval은 실행되기만 하면 하루 종일 일 생김 -> 어차피 영상 멈추는 일을 가정하지 않으면 이게 나을 수 있음
             startRecording();
+            setInterval(function () { alert('hello'); }, 3000);
+            console.log("qwe");  // 영상 재생된  시간 float 반환 ->  player.getCurrentTime()
         }
-         if(event.data === 0)
-         {
+        if(event.data === 2)  //영상 pause
+        {
+            console.log("pauseed");
+        }
+        if(event.data === 0)
+        {
           stopRecording();
           setTimeout(function(){
-              window.location = "https://2021-capstone-mlhc.com/main_page/";
+             window.location = "https://2021-capstone-mlhc.com/main_page/";
           },500);
          //  window.location = "https://2021-capstone-mlhc.com/main_page/";
         }
@@ -127,7 +134,7 @@
     {% for list in similar_ad_list %}
     {% if list.ad_url != "" %}
     <div id="similar_ad_img">
-        <a href = /main_page/?ad_key={{list.tag3}}> <img width=180 src= {{list.ad_url}} ></a> 
+        <a href = /main_page/?ad_key={{list.tag3}}> <img width=180 height=101 src= {{list.ad_url}} ></a> 
         <div id="similar_ad_name">
             <a href = /main_page/?ad_key={{list.tag3}}>  <font size="4"> {{list.ad_name}}</font> </a> </br> <font size="2" style="color:gray;">{{list.name}}</font>
         </div>

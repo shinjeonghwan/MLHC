@@ -5,7 +5,7 @@ app_name = 'main_page'
 
 urlpatterns = [
     path('', views.index, name="index"),
-    path('audio/', views.audio, name='audio'),
+#    path('audio/', views.audio, name='audio'),
 #    path('audio/record' , views.audio_record, name='record'),
     path('upload/', views.upload, name='upload'),
     #path('<int:question_id>/', views.detail, name='detail'),

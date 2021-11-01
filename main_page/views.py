@@ -16,11 +16,8 @@ import os
 
 def index(request):
     print("index.view start!!!")
-#    print(settings.KAKAO_API_KEY)
-#    print(type(settings.KAKAO_API_KEY))
     stored_ad_url = AD_LIST.objects.all()
     length = to_list(stored_ad_url)
-#    print(stored_ad_url)
 
 #    keyword = wav_to_kakao_api(settings.KAKAO_API_KEY)   #rest_api == SECRET_KEY
     keyword = wav_to_kakao_api(KAKAO_API_KEY())
@@ -40,7 +37,7 @@ def index(request):
         else:
             GET_ad_key = ad_key
             ad_key = "https://www.youtube.com/watch?v=" + ad_key
-            GET_ad_keyword = AD_LIST.objects.get(ad_url = ad_key).main_key_word
+            GET_ad_keyword = [AD_LIST.objects.get(ad_url = ad_key).main_key_word]
             GET_ad_id =  AD_LIST.objects.get(ad_url = ad_key).id
             GET_ad_name = AD_LIST.objects.get(ad_url = ad_key).ad_name
             GET_ad_feedback_value = AD_LIST.objects.get(ad_url = ad_key).feedback_value
@@ -50,7 +47,7 @@ def index(request):
             ad_thumnail = str_split[1]
             ad_thumnail = "http://img.youtube.com/vi/" + ad_thumnail + "/mqdefault.jpg"
 
-            tmp_similar_ad = AD_LIST.objects.filter(main_key_word=GET_ad_keyword).order_by('-feedback_value')
+            tmp_similar_ad = AD_LIST.objects.filter(main_key_word=GET_ad_keyword[0]).order_by('-feedback_value')
             similar_ad = tmp_similar_ad.values()
             print("similar_ad")
             print(similar_ad)
@@ -216,10 +213,6 @@ def watch_to_embed(stored_ad_url):
 
     return list_of_ad_url, list_of_ad_id
 
-def audio(request):
-#    return render(request, "main_page/audio.html")
-    return render(request, "main_page/iframe_api.html")
-
 def P_feedback(request):
 #    if request.is_ajax():
 #        random_pick = request.GET['P_key']
@@ -259,7 +252,7 @@ def upload(request):
     audio_data = request.FILES['audio_data']
     print(type(audio_data))
     print(audio_data.size)
-    audio = wave.open('t2est.wav', 'wb')
+    audio = wave.open('t3est.wav', 'wb')
     audio.setnchannels(1)
     audio.setnframes(1)
     audio.setsampwidth(2)
