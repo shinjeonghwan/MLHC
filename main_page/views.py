@@ -23,6 +23,7 @@ def index(request):
     keyword = wav_to_kakao_api(KAKAO_API_KEY())
     print("keyword")
     print(keyword)
+    print(type(keyword))
 
 #--------------------------------케이스 3 가지처리해야함-----------------------------
 
@@ -268,28 +269,39 @@ def wav_to_kakao_api(rest_api_key):
     import requests
     import json
     kakao_speech_url = "https://kakaoi-newtone-openapi.kakao.com/v1/recognize"
-
-    keyword = []
+    STT_string = []
+    Full_string = []
+    path = './speech_records/'
+    file_list = os.listdir(path)
 
     headers = {
         "Content-Type": "application/octet-stream",
         "X-DSS-Service": "DICTATION",
         "Authorization": "KakaoAK " + rest_api_key,
     }
+    print("EEEE")
     #이 부분에서 여러개의 .wav 파일을 카카오로 보낸 다음 결과로 받은 keyword 문장을 다 이어주어야 함.
     try:
-        with open('t2est.wav', 'rb') as fp:
-            audio = fp.read()
-        res = requests.post(kakao_speech_url, headers=headers, data=audio)
+        print("GFGF")
+        for file in file_list:
+            print("BBB")
+            with open(path+file, 'rb') as fp:
+                audio = fp.read()
+            res = requests.post(kakao_speech_url, headers=headers, data=audio)
 
-        result_json_string = res.text[res.text.index('{"type":"finalResult"'):res.text.rindex('}')+1]
-        result = json.loads(result_json_string)
-        print(result)
-        print(result['value'])
+            result_json_string = res.text[res.text.index('{"type":"finalResult"'):res.text.rindex('}')+1]
+            result = json.loads(result_json_string)
+            print(result)
+            print(result['value'])
 
-        STT_string = string_to_keyword(result['value'])
-        os.remove("./t2est.wav")
-        return STT_string
+
+            STT_string = string_to_keyword(result['value'])  #아마 STT_string 결과가 list 일 것, 그렇다면 현재는 바로 Full_string에 이어서 붙여 쓰고, 나중에 Amazon_comprehend쓸 때는 스트링으로 처리해야할 가능성이 생김
+            #Full_string = "/".join()   #만약에 스트링으로 처리해야 한다면
+            Full_string.append(STT_string)
+            os.remove(path+file)
+            print("B@:@:@")
+            #return STT_string
+        return Full_string
 
     except:
         return 0

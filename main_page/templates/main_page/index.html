@@ -48,7 +48,8 @@
         {
             console.log("played"); //setInterval은 실행되기만 하면 하루 종일 일 생김 -> 어차피 영상 멈추는 일을 가정하지 않으면 이게 나을 수 있음
             startRecording();
-            setInterval(function () { console.log("helo"); }, 3000);
+            setInterval(function () { stopRecording();
+                                      startRecording(); }, 3000);
             console.log("qwe");  // 영상 재생된  시간 float 반환 ->  player.getCurrentTime()
         }
         if(event.data === 2)  //영상 pause
