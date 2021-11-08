@@ -11,7 +11,8 @@ from django.conf import settings
 
 from main_page.key import KAKAO_API_KEY
 
-import os
+import os, shutil
+from datetime import datetime
 
 
 def index(request):
@@ -19,7 +20,6 @@ def index(request):
     stored_ad_url = AD_LIST.objects.all()
     length = to_list(stored_ad_url)
 
-#    keyword = wav_to_kakao_api(settings.KAKAO_API_KEY)   #rest_api == SECRET_KEY
     keyword = wav_to_kakao_api(KAKAO_API_KEY())
     print("keyword")
     print(keyword)
@@ -248,17 +248,19 @@ def Check_Feedback_value(stored_ad_url):
 
 @csrf_exempt
 def upload(request):
-    print(request.FILES['audio_data'])
     audio_data = request.FILES['audio_data']
-    print(type(audio_data))
-    print(audio_data.size)
-    audio = wave.open('t3est.wav', 'wb')
+    now = datetime.now().strftime("%Y%m%d-%H%M%S")
+    file_name = now+'.wav'
+    audio = wave.open(file_name, 'wb')
     audio.setnchannels(1)
     audio.setnframes(1)
     audio.setsampwidth(2)
     audio.setframerate(16000)
     blob = audio_data.read()
     audio.writeframes(blob)
+    from_ = file_name
+    to_ = './speech_records'
+    shutil.move(from_, to_)
     return JsonResponse({})
 
 
@@ -274,6 +276,7 @@ def wav_to_kakao_api(rest_api_key):
         "X-DSS-Service": "DICTATION",
         "Authorization": "KakaoAK " + rest_api_key,
     }
+    #이 부분에서 여러개의 .wav 파일을 카카오로 보낸 다음 결과로 받은 keyword 문장을 다 이어주어야 함.
     try:
         with open('t2est.wav', 'rb') as fp:
             audio = fp.read()
@@ -284,9 +287,9 @@ def wav_to_kakao_api(rest_api_key):
         print(result)
         print(result['value'])
 
-        keyword = string_to_keyword(result['value'])
+        STT_string = string_to_keyword(result['value'])
         os.remove("./t2est.wav")
-        return keyword
+        return STT_string
 
     except:
         return 0
