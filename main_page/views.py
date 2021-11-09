@@ -11,7 +11,7 @@ from django.conf import settings
 
 from main_page.key import KAKAO_API_KEY
 
-import os, shutil
+import os
 from datetime import datetime
 
 
@@ -252,7 +252,7 @@ def Check_Feedback_value(stored_ad_url):
 def upload(request):
     audio_data = request.FILES['audio_data']
     now = datetime.now().strftime("%Y%m%d-%H%M%S")
-    file_name = now+'.wav'
+    file_name = './speech_records/'+now+'.wav'
     audio = wave.open(file_name, 'wb')
     audio.setnchannels(1)
     audio.setnframes(1)
@@ -260,9 +260,6 @@ def upload(request):
     audio.setframerate(16000)
     blob = audio_data.read()
     audio.writeframes(blob)
-    from_ = file_name
-    to_ = './speech_records'
-    shutil.move(from_, to_)
     return JsonResponse({})
 
 

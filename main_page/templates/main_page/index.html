@@ -49,8 +49,7 @@
             console.log("played"); //setInterval은 실행되기만 하면 하루 종일 일 생김 -> 어차피 영상 멈추는 일을 가정하지 않으면 이게 나을 수 있음
             startRecording();
             setInterval(function () { stopRecording();
-                                      startRecording(); }, 5000);
-            console.log("qwe");  // 영상 재생된  시간 float 반환 ->  player.getCurrentTime()
+                                      startRecording(); }, 4000);
         }
         if(event.data === 2)  //영상 pause
         {
@@ -61,8 +60,7 @@
           stopRecording();
           setTimeout(function(){
              window.location = "https://2021-capstone-mlhc.com/main_page/";
-          }, 1000);
-         //  window.location = "https://2021-capstone-mlhc.com/main_page/";
+          }, 500);
         }
       }
       function stopVideo() {
