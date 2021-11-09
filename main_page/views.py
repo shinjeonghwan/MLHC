@@ -77,6 +77,7 @@ def index(request):
 
 #---------------2. 음성파일이 없을 때, 랜덤으로 영상 출력 및 특정 조건으로 연관 영상들을 옆에 띄우기---------------
     if keyword == 0: #저장된 음성파일이 없으면
+        print("음성파일 없고 랜덤")
         url_list, url_list_id = watch_to_embed(stored_ad_url)
         url_list_len = len(url_list)
 
@@ -270,7 +271,8 @@ def wav_to_kakao_api(rest_api_key):
     import json
     kakao_speech_url = "https://kakaoi-newtone-openapi.kakao.com/v1/recognize"
     STT_string = []
-    Full_string = []
+    tmp_string = []
+    Full_keyword = []
     path = './speech_records/'
     file_list = os.listdir(path)
 
@@ -279,34 +281,23 @@ def wav_to_kakao_api(rest_api_key):
         "X-DSS-Service": "DICTATION",
         "Authorization": "KakaoAK " + rest_api_key,
     }
-    print("EEEE")
-    #이 부분에서 여러개의 .wav 파일을 카카오로 보낸 다음 결과로 받은 keyword 문장을 다 이어주어야 함.
-    try:
-        print("GFGF")
-        for file in file_list:
-            print("BBB")
+    for file in file_list:
+        try:
             with open(path+file, 'rb') as fp:
                 audio = fp.read()
             res = requests.post(kakao_speech_url, headers=headers, data=audio)
-
+            os.remove(path+file)
             result_json_string = res.text[res.text.index('{"type":"finalResult"'):res.text.rindex('}')+1]
             result = json.loads(result_json_string)
-            print(result)
-            print(result['value'])
-
-
             STT_string = string_to_keyword(result['value'])  #아마 STT_string 결과가 list 일 것, 그렇다면 현재는 바로 Full_string에 이어서 붙여 쓰고, 나중에 Amazon_comprehend쓸 때는 스트링으로 처리해야할 가능성이 생김
             #Full_string = "/".join()   #만약에 스트링으로 처리해야 한다면
-            Full_string.append(STT_string)
-            os.remove(path+file)
-            print("B@:@:@")
-            #return STT_string
-        return Full_string
+            tmp_string.append(STT_string)
+            #os.remove(path+file)
+        except:
+            pass
 
-    except:
-        return 0
-
-
+    Full_keyword = sum(tmp_string, [])
+    return Full_keyword
 
 def string_to_keyword(string):    #keyword로 쪼갤 아이디어 함수
     demo = string.split(' ')
