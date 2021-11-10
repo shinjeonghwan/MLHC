@@ -57,14 +57,14 @@ def index(request):
                     modi_link = queryset_dict['ad_url']
                     modi_link = modi_link.split("/watch?v=")[1]
                     ad_link = "http://img.youtube.com/vi/" + modi_link + "/mqdefault.jpg"
-                    queryset_dict.update(tag3 = modi_link) #tag3를 임시로ad_key값을 위해  사용
+                    queryset_dict.update(tmp = modi_link)
                     queryset_dict.update(ad_url = ad_link)
                     if ad_link == ad_thumnail:
                         queryset_dict.update(ad_url = '')
                         queryset_dict.update(name = '')
                         queryset_dict.update(ad_name = '')
                         queryset_dict.update(feedback_value = '')
-                        queryset_dict.update(tag3 = '')
+                        queryset_dict.update(tmp = '')
 
             else:
                 print("keyword 선택 안됨")
@@ -103,14 +103,14 @@ def index(request):
                 modi_link = queryset_dict['ad_url']
                 modi_link = modi_link.split("/watch?v=")[1]
                 ad_link = "http://img.youtube.com/vi/" + modi_link + "/mqdefault.jpg"
-                queryset_dict.update(tag3 = modi_link) #tag3를 임시로ad_key값을 위해  사용
+                queryset_dict.update(tmp = modi_link)
                 queryset_dict.update(ad_url = ad_link)
                 if ad_link == ad_thumnail:
                     queryset_dict.update(ad_url = '')
                     queryset_dict.update(name = '')
                     queryset_dict.update(ad_name = '')
                     queryset_dict.update(feedback_value = '')
-                    queryset_dict.update(tag3 = '')
+                    queryset_dict.update(tmp = '')
 
         else:
             print("keyword 선택 안됨")
@@ -157,14 +157,14 @@ def index(request):
                 modi_link = queryset_dict['ad_url']
                 modi_link = modi_link.split("/watch?v=")[1]
                 ad_link = "http://img.youtube.com/vi/" + modi_link + "/mqdefault.jpg"
-                queryset_dict.update(tag3 = modi_link) #tag3를 임시로ad_key값을 위해  사용
+                queryset_dict.update(tmp = modi_link)
                 queryset_dict.update(ad_url = ad_link)
                 if ad_link == ad_thumnail:
                     queryset_dict.update(ad_url = '')
                     queryset_dict.update(name = '')
                     queryset_dict.update(ad_name = '')
                     queryset_dict.update(feedback_value = '')
-                    queryset_dict.update(tag3 = '')
+                    queryset_dict.update(tmp = '')
 
         else:
             print("keyword 선택 안됨")
@@ -179,13 +179,13 @@ def index(request):
                      modi_link = queryset_dict['ad_url']
                      modi_link = modi_link.split("/watch?v=")[1]
                      ad_link = "http://img.youtube.com/vi/" + modi_link + "/mqdefault.jpg"
-                     queryset_dict.update(tag3 = modi_link) #tag3를 임시로ad_key값을 위해  사용
+                     queryset_dict.update(tmp = modi_link)
                      queryset_dict.update(ad_url = ad_link)
                      if ad_link == ad_thumnail:
                          queryset_dict.update(ad_url = '')
                          queryset_dict.update(ad_name = '')
                          queryset_dict.update(feedback_value = '')
-                         queryset_dict.update(tag3 = '')
+                         queryset_dict.update(tmp = '')
 
              else:
                  print("keyword 선택 안됨")
@@ -330,6 +330,7 @@ def selected_ad(keyword, stored_ad_url, length):         #태그매칭으로 직
         tmp_list.append(list.tag1)
         tmp_list.append(list.tag2)
         tmp_list.append(list.tag3)
+        tmp_list.append(list.tag4)
 
         for j in range(0,4):   #각각 4번 돌릴거
             if tmp_list[j] in keyword:

@@ -9,6 +9,8 @@ class AD_LIST(models.Model):
     tag1 = models.CharField(max_length=100)
     tag2 = models.CharField(max_length=100)
     tag3 = models.CharField(max_length=100)
+    tag4 = models.CharField(max_length=100, blank=True)
+    tmp = models.CharField(max_length=100, blank=True)
     weight = models.FloatField(default=0)
     call_count = models.IntegerField(default=0)
     feedback_value = models.IntegerField(default=0)

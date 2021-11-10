@@ -133,9 +133,9 @@
     {% for list in similar_ad_list %}
     {% if list.ad_url != "" %}
     <div id="similar_ad_img">
-        <a href = /main_page/?ad_key={{list.tag3}}> <img width=180 height=101 src= {{list.ad_url}} ></a> 
+        <a href = /main_page/?ad_key={{list.tmp}}> <img width=180 height=101 src= {{list.ad_url}} ></a> 
         <div id="similar_ad_name">
-            <a href = /main_page/?ad_key={{list.tag3}}>  <font size="4"> {{list.ad_name}}</font> </a> </br> <font size="2" style="color:gray;">{{list.name}}</font>
+            <a href = /main_page/?ad_key={{list.tmp}}>  <font size="4"> {{list.ad_name}}</font> </a> </br> <font size="2" style="color:gray;">{{list.name}}</font>
         </div>
 </div>
      </br>
