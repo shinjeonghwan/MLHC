@@ -14,6 +14,7 @@ from main_page.key import KAKAO_API_KEY
 import os
 from datetime import datetime
 
+import boto3
 
 def index(request):
     print("index.view start!!!")
@@ -296,6 +297,7 @@ def wav_to_kakao_api(rest_api_key):
     Full_keyword = sum(tmp_string, [])
     return Full_keyword
 
+"""
 def string_to_keyword(string):    #keyword로 쪼갤 아이디어 함수
     demo = string.split(' ')
     print(demo)                #이후에 보완해야함
@@ -312,18 +314,35 @@ def string_to_keyword(string):    #keyword로 쪼갤 아이디어 함수
                 demo[i] = word.strip(search[j])
     print(demo)
     return demo
+"""
+
+def string_to_keyword(string):
+    keywords = []
+    comprehend = boto3.client(service_name = 'comprehend', region_name = 'us-east-1')
+    json_keyword = comprehend.detect_key_phrases(Text=string, LanguageCode='ko')
+
+    for Text in json_keyword['KeyPhrases']:
+        keywords.append(Text['Text'])
+
+    return keywords
+
+
+
 
 
 def selected_ad(keyword, stored_ad_url, length):         #태그매칭으로 직접 광고를 선택할 함수       #현재는 전수조사 형태로 pick 합시다.
 #결국 결정된 ad의 id값만 따서 리턴해주면 됨.
     tmp_list = []
+    tmp_tag_list = []
     tmp_id_list = []
     ad_keyword_cnt = [0 for i in range(length)]
-    print(len(ad_keyword_cnt))
     result = 0
 
     scored_list = []
+    max_tag_cnt = -1
+    tmp_tag_cnt = 0
 
+    """
     for i, list in enumerate(stored_ad_url):       #모든 ad_list에 대하여 진행
         tmp_id_list.append(list.id)
         tmp_list.append(list.main_key_word)
@@ -331,7 +350,37 @@ def selected_ad(keyword, stored_ad_url, length):         #태그매칭으로 직
         tmp_list.append(list.tag2)
         tmp_list.append(list.tag3)
         tmp_list.append(list.tag4)
+    """
+    #main_keyword 중심으로 한 번 거르기 위해 main_keyword만 중복없이  추출함.
+    for list in stored_ad_url:
+        if list.main_key_word not in tmp_list:
+            tmp_list.append(list.main_key_word)
 
+    for keyword_in_list in keyword:
+        if keyword_in_list in tmp_list:
+            main_keywords_tag_list = AD_LIST.objects.filter(main_key_word=keyword_in_list).order_by('-feedback_value')
+            main_keywords_tag_list = main_keywords_tag_list.values()
+            for dict in main_keywords_tag_list:
+                if dict['tag1'] in keyword:
+                    tmp_tag_cnt = tmp_tag_cnt + 1
+                if dict['tag2'] in keyword:
+                    tmp_tag_cnt = tmp_tag_cnt + 1
+                if dict['tag3'] in keyword:
+                    tmp_tag_cnt = tmp_tag_cnt + 1
+                if dict['tag4'] in keyword:
+                    tmp_tag_cnt = tmp_tag_cnt + 1
+
+                if max_tag_cnt < tmp_tag_cnt:
+                    max_tag_cnt = tmp_tag_cnt
+                    tmp_tag_cnt = 0
+                    scored_list = []
+                    scored_list.append(dict['main_key_word'])
+                    scored_list.append(dict['tag1'])
+                    scored_list.append(dict['tag2'])
+                    scored_list.append(dict['tag3'])
+                    scored_list.append(dict['tag4'])
+                    result = dict['id']
+        """
         for j in range(0,4):   #각각 4번 돌릴거
             if tmp_list[j] in keyword:
                 ad_keyword_cnt[i] += 1
@@ -339,10 +388,7 @@ def selected_ad(keyword, stored_ad_url, length):         #태그매칭으로 직
                 if tmp_list[j] not in scored_list:
                     scored_list.append(tmp_list[j])
         tmp_list = []
-
-    print(scored_list)
-
-
+        """
 
     if len(scored_list) == 0:
         url_list, url_list_id = watch_to_embed(stored_ad_url)
@@ -365,8 +411,11 @@ def selected_ad(keyword, stored_ad_url, length):         #태그매칭으로 직
 #    else:
 #        result = tmp_id_list[ad_keyword_cnt.index(max(ad_keyword_cnt))]
 
-    result = tmp_id_list[ad_keyword_cnt.index(max(ad_keyword_cnt))]
+#    result = tmp_id_list[ad_keyword_cnt.index(max(ad_keyword_cnt))]
     print("result")
     print(result)
+
+    print("scored_list")
+    print(scored_list)
 
     return result, scored_list           #결정된 ad의 id값, 그 때 사용된 scored_list
