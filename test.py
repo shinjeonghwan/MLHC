@@ -20,6 +20,8 @@ okt=Okt()
 def string_to_keyword(string):
     keywords = []
 
+    text_input = string
+    J_list = josa_list(text_input) #조사 위치정보 확인
     comprehend = boto3.client(service_name = 'comprehend', region_name = 'us-east-1')
     json_keyword = comprehend.detect_key_phrases(Text=string, LanguageCode='ko')['KeyPhrases']
 
@@ -35,9 +37,6 @@ def string_to_keyword(string):
     #추출된 키워드의 점수,텍스트,문장의 시작위치,끝 위치
     pair = list(zip(score,text,BeginOffset,EndOffset)) #confidence에 따른 정렬
 
-#    print(okt.normalize(result['value']))
-#    print(text_input)
-
     #불용어 파일에 해당하는 불용어 키워드 제거
     #단어 전체가 완전히 불용어인 경우만 제거 ex 유강이랑 - 제거 x , 에서 - 제거 d
     D_pair = del_pair(pair)
@@ -49,12 +48,11 @@ def string_to_keyword(string):
     re_pair = pair_replace(J_pair)
 
 
-    """
-    for Text in json_keyword['KeyPhrases']:
-        keywords.append(Text['Text'])
-    """
-    #return keywords
-    return re_pair
+    keywords = []
+    for keyword in re_pair:
+        keywords.append(keyword[1])
+
+    return keywords
 
 
 kakao_speech_url = "https://kakaoi-newtone-openapi.kakao.com/v1/recognize"
@@ -86,7 +84,8 @@ def del_pair(pair): # 불용어 제거
 
 def pair_replace(pair): #스페이스바 기준으로 나눔
     del_pair(pair)
-    k = list()
+    k = []
+    print(pair)
     for i in pair:
         if i[1].find(" ") >= 0 :
 #             k.append((i[0],i[1].replace(" ",""),i[2],i[3]))
@@ -123,22 +122,29 @@ def josa_del(josa_list,re_pair):
 
 
 
+
+#불용어 파일 불러오기
+stopword_path = './ko_stopword.txt'
+stopword = list()
+with open(stopword_path, 'r',encoding='UTF8' ) as file:
+    line = None
+    while line != '':
+        line = file.readline()
+        stopword.append(line.strip('\n'))
+
+
+
+
 comprehend = boto3.client(service_name = 'comprehend', region_name = 'us-east-1')
 
 text = "테스트 중 치킨이랑 맥주먹고싶다 시발 아침에 눈을 뜨면 콩깍지콩쥐 팥쥐"
 json_keyword = comprehend.detect_key_phrases(Text=text, LanguageCode='ko')
 
-print(comprehend.detect_key_phrases(Text=text, LanguageCode='ko'))
-print(json_keyword['KeyPhrases'][0]['Text'])
-print(comprehend.detect_key_phrases(Text=text, LanguageCode='ko')['KeyPhrases'][1]['Text'])
-print(comprehend.detect_key_phrases(Text=text, LanguageCode='ko')['KeyPhrases'][2]['Text'])
+print(text)
+text_input = okt.normalize(text)
+print(text_input)
 
-print(len(json_keyword))
-
-for i in json_keyword['KeyPhrases']:
-    print(i['Text'])
-
-
-
-STT_string = string_to_keyword("무신사랑해")
+STT_string = string_to_keyword(text_input)
+print("ASD")
 print(STT_string)
+
