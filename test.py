@@ -121,7 +121,11 @@ def josa_del(josa_list,re_pair):
     return re_pair
 
 
+# 처음 처리해야되는 부분
 
+#동의어 pretrain된 모델 로딩
+#FastText_path = '../cc.ko.300.bin'
+#model = FT.load_fasttext_format(FastText_path)
 
 #불용어 파일 불러오기
 stopword_path = './ko_stopword.txt'
@@ -133,18 +137,85 @@ with open(stopword_path, 'r',encoding='UTF8' ) as file:
         stopword.append(line.strip('\n'))
 
 
+path = './speech_records/'
+file_list = os.listdir(path)
+print(file_list)
 
 
-comprehend = boto3.client(service_name = 'comprehend', region_name = 'us-east-1')
 
-text = "테스트 중 치킨이랑 맥주먹고싶다 시발 아침에 눈을 뜨면 콩깍지콩쥐 팥쥐"
-json_keyword = comprehend.detect_key_phrases(Text=text, LanguageCode='ko')
+string = ''
+Full_string = []
+#print("GFGF")
+for file in file_list:
+    try:
+        #print("BBB")
+        with open(path+file, 'rb') as fp:
+            audio = fp.read()
+        res = requests.post(kakao_speech_url, headers=headers, data=audio)
 
-print(text)
-text_input = okt.normalize(text)
-print(text_input)
+        result_json_string = res.text[res.text.index('{"type":"finalResult"'):res.text.rindex('}')+1]
+        result = json.loads(result_json_string)
+        #print(result)
+        print(result['value'])
+        #print("AAA")
+        STT_string = string_to_keyword(result['value'])  #아마 STT_string 결과가 list 일 것, 그렇다면 현재는 바로 Full_string에 이어서 붙여 쓰고, 나중에 Amazon_comprehend쓸 때는 스트링으로 처리해야할 가능성이 생김
+        print(STT_string)
+        print("GFGFG")
+        string += ' '  + result['value']
+        print(string)
+        print("BVBV")
+        #print("BBB")
+        #Full_string = "/".join()   #만약에 스트링으로 처리해야 한다면
+        #print("CCC")
+        Full_string.append(STT_string)
+ #       print(STT_string)
+        print(type(STT_string))
 
-STT_string = string_to_keyword(text_input)
-print("ASD")
-print(STT_string)
+        text_input = okt.normalize(result['value'])
+        print("text_input")
+        J_list = josa_list(text_input)
+        #os.remove(path+file)
+        #print("B@:@:@")
+        #return STT_string
+        #return Full_string
+
+    except Exception as e:    # 모든 예외의 에러 메시지를 출력할 때는 Exception을 사용
+        print(e)
+        pass
+            #return Full_string
+
+
+
+
+#print(Full_string)
+tmp = sum(Full_string, [])
+print(tmp)
+
+#Amazon comprehend API 활성화
+#comprehend = boto3.client(service_name='comprehend', region_name='us-east-1')
+
+zsl = Pororo(task="zero-topic", lang="ko")
+
+test = zsl(string, ["음식", "의류", "화장품", "술", "생활용품", "음료"])
+
+#print(zsl("나가서 뜨끈한 국밥 한그릇하자",["식사","스포츠","의류"]))
+print(string)
+print(test)
+
+
+
+
+
+#comprehend = boto3.client(service_name = 'comprehend', region_name = 'us-east-1')
+
+#text = "테스트 중 치킨이랑 맥주먹고싶다 시발 아침에 눈을 뜨면 콩깍지콩쥐 팥쥐"
+#json_keyword = comprehend.detect_key_phrases(Text=text, LanguageCode='ko')
+
+#print(text)
+#text_input = okt.normalize(text)
+#print(text_input)
+
+#STT_string = string_to_keyword(text_input)
+#print("ASD")
+#print(STT_string)
 

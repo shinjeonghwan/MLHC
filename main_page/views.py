@@ -13,18 +13,24 @@ from main_page.key import KAKAO_API_KEY
 
 import os
 from datetime import datetime
-
 import boto3
+from pororo import Pororo
+import pandas as pd
+from gensim.models import FastText as FT
+import numpy as np
+from konlpy.tag import Okt
+import random
+okt=Okt()
+
+
 
 def index(request):
     print("index.view start!!!")
     stored_ad_url = AD_LIST.objects.all()
     length = to_list(stored_ad_url)
 
-    keyword = wav_to_kakao_api(KAKAO_API_KEY())
-    print("keyword")
-    print(keyword)
-    print(type(keyword))
+    keyword, Full_sentence = wav_to_kakao_api(KAKAO_API_KEY())
+    print(Full_sentence)
 
 #--------------------------------케이스 3 가지처리해야함-----------------------------
 
@@ -39,7 +45,11 @@ def index(request):
         else:
             GET_ad_key = ad_key
             ad_key = "https://www.youtube.com/watch?v=" + ad_key
-            GET_ad_keyword = [AD_LIST.objects.get(ad_url = ad_key).main_key_word]
+            GET_ad_keyword = [AD_LIST.objects.get(ad_url = ad_key).tag1]
+            GET_ad_keyword.append(AD_LIST.objects.get(ad_url = ad_key).tag2)
+            GET_ad_keyword.append(AD_LIST.objects.get(ad_url = ad_key).tag3)
+            GET_ad_keyword.append(AD_LIST.objects.get(ad_url = ad_key).tag4)
+
             GET_ad_id =  AD_LIST.objects.get(ad_url = ad_key).id
             GET_ad_name = AD_LIST.objects.get(ad_url = ad_key).ad_name
             GET_ad_feedback_value = AD_LIST.objects.get(ad_url = ad_key).feedback_value
@@ -49,7 +59,9 @@ def index(request):
             ad_thumnail = str_split[1]
             ad_thumnail = "http://img.youtube.com/vi/" + ad_thumnail + "/mqdefault.jpg"
 
-            tmp_similar_ad = AD_LIST.objects.filter(main_key_word=GET_ad_keyword[0]).order_by('-feedback_value')
+            GET_ad_main_keyword = [AD_LIST.objects.get(ad_url = ad_key).main_key_word]
+
+            tmp_similar_ad = AD_LIST.objects.filter(main_key_word=GET_ad_main_keyword[0]).order_by('-feedback_value')
             similar_ad = tmp_similar_ad.values()
             print("similar_ad")
             print(similar_ad)
@@ -88,7 +100,11 @@ def index(request):
         random_ad_id = url_list_id[random_pick]
         random_ad_id_feedback_value = AD_LIST.objects.get(id = random_ad_id).feedback_value
 
-        random_ad_keyword = [AD_LIST.objects.get(id = random_ad_id).main_key_word]
+        random_ad_keyword = [AD_LIST.objects.get(id = random_ad_id).tag1]
+        random_ad_keyword.append(AD_LIST.objects.get(id = random_ad_id).tag2)
+        random_ad_keyword.append(AD_LIST.objects.get(id = random_ad_id).tag3)
+        random_ad_keyword.append(AD_LIST.objects.get(id = random_ad_id).tag4)
+
         random_ad_name = AD_LIST.objects.get(id = random_ad_id).ad_name
 
         str_split = random_ad.split("/embed/")
@@ -96,7 +112,8 @@ def index(request):
         random_ad_key = str_split[1]
         ad_thumnail = "http://img.youtube.com/vi/" + ad_thumnail + "/mqdefault.jpg"
 
-        tmp_similar_ad = AD_LIST.objects.filter(main_key_word=random_ad_keyword[0]).order_by('-feedback_value')
+        random_ad_main_keyword = [AD_LIST.objects.get(ad_url = random_ad).main_key_word]
+        tmp_similar_ad = AD_LIST.objects.filter(main_key_word=random_ad_main_keyword[0]).order_by('-feedback_value')
         similar_ad = tmp_similar_ad.values()
 
         if similar_ad:
@@ -133,7 +150,7 @@ def index(request):
 #-------------3. 음성파일이 있을 때, 그거와 관련된 영상 출력 및 동일한 메인 태그에 대한 연관 영상 띄우기 ----------------
     else:     #음성파일이 있으면
         print("음성파일 있음")        #음성 파일이 있는데, 광고 DB에 전부 매칭되지 않는 음성인 경우 처리해주어야함. random_pick 과정을 함수화 해서, 위에도 쓰고, 여기도 쓰면 좋을듯
-        pick, scored_list = selected_ad(keyword, stored_ad_url, length)
+        pick, scored_list = selected_ad(keyword, stored_ad_url, length, Full_sentence)
         print("scored_list")
         print(type(scored_list))
         print(scored_list)
@@ -279,6 +296,8 @@ def wav_to_kakao_api(rest_api_key):
         "X-DSS-Service": "DICTATION",
         "Authorization": "KakaoAK " + rest_api_key,
     }
+
+    string = ''
     for file in file_list:
         try:
             with open(path+file, 'rb') as fp:
@@ -288,49 +307,118 @@ def wav_to_kakao_api(rest_api_key):
             result_json_string = res.text[res.text.index('{"type":"finalResult"'):res.text.rindex('}')+1]
             result = json.loads(result_json_string)
             STT_string = string_to_keyword(result['value'])  #아마 STT_string 결과가 list 일 것, 그렇다면 현재는 바로 Full_string에 이어서 붙여 쓰고, 나중에 Amazon_comprehend쓸 때는 스트링으로 처리해야할 가능성이 생김
-            #Full_string = "/".join()   #만약에 스트링으로 처리해야 한다면
+            string += ' ' + result['value']
             tmp_string.append(STT_string)
-            #os.remove(path+file)
         except:
             pass
 
     Full_keyword = sum(tmp_string, [])
-    return Full_keyword
-
-"""
-def string_to_keyword(string):    #keyword로 쪼갤 아이디어 함수
-    demo = string.split(' ')
-    print(demo)                #이후에 보완해야함
-    search = ['이','가','을','를',
-              '에','에서','의','한테',
-              '고','라고','처럼','만큼',
-              '와','과','은','는','뿐',
-              '만','요','란','다','랑','이다',
-             ]
-    for i, word in enumerate(demo):
-        for j in range(len(search)):
-            if search[j] in word:
-                print('>> modify: ' + word)
-                demo[i] = word.strip(search[j])
-    print(demo)
-    return demo
-"""
+    return Full_keyword, string
 
 def string_to_keyword(string):
     keywords = []
-    comprehend = boto3.client(service_name = 'comprehend', region_name = 'us-east-1')
-    json_keyword = comprehend.detect_key_phrases(Text=string, LanguageCode='ko')
 
-    for Text in json_keyword['KeyPhrases']:
-        keywords.append(Text['Text'])
+    text_input = string
+    J_list = josa_list(text_input) #조사 위치정보 확인
+    comprehend = boto3.client(service_name = 'comprehend', region_name = 'us-east-1')
+    json_keyword = comprehend.detect_key_phrases(Text=string, LanguageCode='ko')['KeyPhrases']
+
+    text= []
+    score= []
+    BeginOffset = []
+    EndOffset = []
+    for key in json_keyword:
+        text.append(key["Text"]) # 조금 더 정확한 유의어 출력을 위한 공백 제거
+        score.append(str(key["Score"]))
+        BeginOffset.append(str(key["BeginOffset"]))
+        EndOffset.append(str(key["EndOffset"]))
+    #추출된 키워드의 점수,텍스트,문장의 시작위치,끝 위치
+    pair = list(zip(score,text,BeginOffset,EndOffset)) #confidence에 따른 정렬
+
+    #불용어 파일에 해당하는 불용어 키워드 제거
+    #단어 전체가 완전히 불용어인 경우만 제거 ex 유강이랑 - 제거 x , 에서 - 제거 d
+    D_pair = del_pair(pair)
+
+    #불용어가 제거된 키워드에서 위치정보에 따라 조사제거 - 유강이랑 -> 유강,유강
+    J_pair = josa_del(J_list,D_pair)
+
+    #띄어쓰기 기준으로 단어 분할 , 이후 불용어 키워드 한번 더 제거
+    re_pair = pair_replace(J_pair)
+
+
+    keywords = []
+    for keyword in re_pair:
+        keywords.append(keyword[1])
 
     return keywords
 
 
+def del_pair(pair): # 불용어 제거
+
+    #불용어 파일 불러오기
+    stopword_path = './ko_stopword.txt'
+    stopword = list()
+    with open(stopword_path, 'r',encoding='UTF8' ) as file:
+        line = None
+        while line != '':
+            line = file.readline()
+            stopword.append(line.strip('\n'))
+
+    pair_len = len(pair)
+    delist = list()
+    for i in range(0,pair_len):
+            for k in stopword:
+                if pair[i][1] == k:
+                    delist.append(pair[i])
+    try:
+        for i in delist:
+            pair.remove(i)
+    except:
+        return pair
+
+    return pair
 
 
+def pair_replace(pair): #스페이스바 기준으로 나눔
+    del_pair(pair)
+    k = []
+    print(pair)
+    for i in pair:
+        if i[1].find(" ") >= 0 :
+#             k.append((i[0],i[1].replace(" ",""),i[2],i[3]))
+            for j in i[1].split():
+                k.append((i[0],j,i[2],i[3]))
+        else:
+            k.append((i[0],i[1],i[2],i[3]))
+    k = del_pair(k)
+    k = list(set(k))
+    k.sort(reverse=True)
+    return k
 
-def selected_ad(keyword, stored_ad_url, length):         #태그매칭으로 직접 광고를 선택할 함수       #현재는 전수조사 형태로 pick 합시다.
+#조사 위치정보 확인
+def josa_list(text):
+    text_input = text
+    josa_list = list()
+    search_len = 0
+    for i in okt.pos(text_input):
+        search_len =  search_len + text_input[search_len:].find(i[0]) + len(i[0])
+
+        if i[1] == 'Josa':
+            k = (i[0],i[1] , search_len-len(i[0]),search_len)
+            josa_list.append(k)
+    return josa_list
+
+# 조사 위치에 따른 제거
+def josa_del(josa_list,re_pair):
+    for j in josa_list:
+        for k in range(0,len(re_pair)) :
+            i = re_pair[k]
+            if int(i[2]) <= int(j[2]) and int(i[3]) >= int(j[3]) :
+                re_pair[k] =  (i[0],i[1][:int(j[2])-int(i[2])] + i[1][int(j[3])-int(i[2]):],i[2],i[3])
+    return re_pair
+
+
+def selected_ad(keyword, stored_ad_url, length, Full_sentence):         #태그매칭으로 직접 광고를 선택할 함수       #현재는 전수조사 형태로 pick 합시다.
 #결국 결정된 ad의 id값만 따서 리턴해주면 됨.
     tmp_list = []
     tmp_tag_list = []
@@ -342,6 +430,19 @@ def selected_ad(keyword, stored_ad_url, length):         #태그매칭으로 직
     max_tag_cnt = -1
     tmp_tag_cnt = 0
 
+
+    zsl = Pororo(task="zero-topic", lang="ko")
+    sentence_main_keyword = zsl(Full_sentence, ["음식", "의류", "화장품", "술", "생활용품", "음료"])   #추후 이 지역은 변경해주어야 함.
+    max = 0
+    picked_main_keyword = []
+    for key in sentence_main_keyword:
+        if sentence_main_keyword[key] > max:
+            max = sentence_main_keyword[key]
+            picked_main_keyword = key
+
+    print("PICKED")
+    print(picked_main_keyword)
+
     """
     for i, list in enumerate(stored_ad_url):       #모든 ad_list에 대하여 진행
         tmp_id_list.append(list.id)
@@ -351,14 +452,16 @@ def selected_ad(keyword, stored_ad_url, length):         #태그매칭으로 직
         tmp_list.append(list.tag3)
         tmp_list.append(list.tag4)
     """
+
     #main_keyword 중심으로 한 번 거르기 위해 main_keyword만 중복없이  추출함.
     for list in stored_ad_url:
         if list.main_key_word not in tmp_list:
             tmp_list.append(list.main_key_word)
 
     for keyword_in_list in keyword:
-        if keyword_in_list in tmp_list:
-            main_keywords_tag_list = AD_LIST.objects.filter(main_key_word=keyword_in_list).order_by('-feedback_value')
+        if keyword_in_list in tmp_list:   #이 부분 날려야 함.
+            #main_keywords_tag_list = AD_LIST.objects.filter(main_key_word=keyword_in_list).order_by('-feedback_value')
+            main_keywords_tag_list = AD_LIST.objects.filter(main_key_word=picked_main_keyword).order_by('-feedback_value')
             main_keywords_tag_list = main_keywords_tag_list.values()
             for dict in main_keywords_tag_list:
                 if dict['tag1'] in keyword:
@@ -374,7 +477,6 @@ def selected_ad(keyword, stored_ad_url, length):         #태그매칭으로 직
                     max_tag_cnt = tmp_tag_cnt
                     tmp_tag_cnt = 0
                     scored_list = []
-                    scored_list.append(dict['main_key_word'])
                     scored_list.append(dict['tag1'])
                     scored_list.append(dict['tag2'])
                     scored_list.append(dict['tag3'])

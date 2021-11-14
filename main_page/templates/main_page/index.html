@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>MLHC</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
@@ -53,6 +53,7 @@
         }
         if(event.data === 2)  //영상 pause
         {
+            stopRecording();
             console.log("pauseed");
         }
         if(event.data === 0)
@@ -69,7 +70,7 @@
     </script>
 
 <h1> < {{selected_name}} ></h1>
-<h2> 선택된 태그 : < {% for list in scored_list %} #{{list}}   {% endfor %}></h2>
+<h2> < {% for list in scored_list %} #{{list}}   {% endfor %}></h2>
 
 <h2> 선택된 광고의 피드백 값< {{selected_ad_id_feedback_value}} ></h2>
 
