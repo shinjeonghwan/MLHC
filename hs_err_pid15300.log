@@ -1,0 +1,72 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007f7d3262c892, pid=15300, tid=15300
+#
+# JRE version: OpenJDK Runtime Environment (11.0.11+9) (build 11.0.11+9-Ubuntu-0ubuntu2.18.04)
+# Java VM: OpenJDK 64-Bit Server VM (11.0.11+9-Ubuntu-0ubuntu2.18.04, mixed mode, sharing, tiered, compressed oops, g1 gc, linux-amd64)
+# Problematic frame:
+# C  [libpthread.so.0+0xc892]  pthread_rwlock_wrlock+0x12
+#
+# No core dump will be written. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugs.launchpad.net/ubuntu/+source/openjdk-lts
+# The crash happened outside the Java Virtual Machine in native code.
+# See problematic frame for where to report the bug.
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -Dfile.encoding=UTF8 -ea -Xmx1024m 
+
+Host: ToastCloud Virtual CPU Gen.2, 2 cores, 3G, Ubuntu 18.04.5 LTS
+Time: Mon Nov 15 11:50:38 2021 KST elapsed time: 9.623849 seconds (0d 0h 0m 9s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0000000005e9a000):  JavaThread "main" [_thread_in_native, id=15300, stack(0x00007ffe4bc5c000,0x00007ffe4bd5c000)]
+
+Stack: [0x00007ffe4bc5c000,0x00007ffe4bd5c000],  sp=0x00007ffe4bd55470,  free space=997k
+Native frames: (J=compiled Java code, A=aot compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [libpthread.so.0+0xc892]  pthread_rwlock_wrlock+0x12
+
+
+siginfo: si_signo: 11 (SIGSEGV), si_code: 1 (SEGV_MAPERR), si_addr: 0x0000000000000018
+
+Register to memory mapping:
+
+RAX=0x0000000000000001 is an unknown value
+RBX=0x0 is NULL
+RCX=0x0000000000000001 is an unknown value
+RDX=0x0000000000000001 is an unknown value
+RSP=0x00007ffe4bd55470 is pointing into the stack for thread: 0x0000000005e9a000
+RBP=0x0000000000000010 is an unknown value
+RSI=0x00007f7d30df0730: <offset 0x00000000001a0730> in /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 at 0x00007f7d30c50000
+RDI=0x0 is NULL
+R8 =0xfffffffffffffff8 is an unknown value
+R9 =0xffffffffffffffff is an unknown value
+R10=0x0 is NULL
+R11=0x0000000003155718 points into unknown readable memory: 0x006c006e006b0066 | 66 00 6b 00 6e 00 6c 00
+R12=0x00000000031db4e0 points into unknown readable memory: 0x0000000000000303 | 03 03 00 00 00 00 00 00
+R13=0x0000000000000010 is an unknown value
+R14=0x00007ffe4bd56060 is pointing into the stack for thread: 0x0000000005e9a000
+R15=0x0000000000000001 is an unknown value
+
+
+Registers:
+RAX=0x0000000000000001, RBX=0x0000000000000000, RCX=0x0000000000000001, RDX=0x0000000000000001
+RSP=0x00007ffe4bd55470, RBP=0x0000000000000010, RSI=0x00007f7d30df0730, RDI=0x0000000000000000
+R8 =0xfffffffffffffff8, R9 =0xffffffffffffffff, R10=0x0000000000000000, R11=0x0000000003155718
+R12=0x00000000031db4e0, R13=0x0000000000000010, R14=0x00007ffe4bd56060, R15=0x0000000000000001
+RIP=0x00007f7d3262c892, EFLAGS=0x0000000000010202, CSGSFS=0x002b000000000033, ERR=0x0000000000000004
+  TRAPNO=0x000000000000000e
+
+Top of Stack: (sp=0x00007ffe4bd55470)
+0x00007ffe4bd55470:   0000000000000010 0000000003155708
+0x00007ffe4bd55480:   0000000000000010 00000000031db4e0
+0x00007ffe4bd55490:   0000000000000010 00007ffe4bd56060
+0x00007ffe4bd554a0:   0000000000000001 00007f7d30e2f989 
+
+Instructions: (pc=0x00007f7d3262c892)
+0x00007f7d3262c792:   e9

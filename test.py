@@ -85,7 +85,7 @@ def del_pair(pair): # 불용어 제거
 def pair_replace(pair): #스페이스바 기준으로 나눔
     del_pair(pair)
     k = []
-    print(pair)
+#    print(pair)
     for i in pair:
         if i[1].find(" ") >= 0 :
 #             k.append((i[0],i[1].replace(" ",""),i[2],i[3]))
@@ -139,10 +139,10 @@ with open(stopword_path, 'r',encoding='UTF8' ) as file:
 
 path = './speech_records/'
 file_list = os.listdir(path)
-print(file_list)
+#print(file_list)
 
 
-
+"""
 string = ''
 Full_string = []
 #print("GFGF")
@@ -186,21 +186,22 @@ for file in file_list:
 
 
 
-
-#print(Full_string)
+print(Full_string)
 tmp = sum(Full_string, [])
 print(tmp)
+
+"""
 
 #Amazon comprehend API 활성화
 #comprehend = boto3.client(service_name='comprehend', region_name='us-east-1')
 
 zsl = Pororo(task="zero-topic", lang="ko")
 
-test = zsl(string, ["음식", "의류", "화장품", "술", "생활용품", "음료"])
+#test = zsl(string, ["음식", "의류", "화장품", "술", "생활용품", "음료"])
 
 #print(zsl("나가서 뜨끈한 국밥 한그릇하자",["식사","스포츠","의류"]))
-print(string)
-print(test)
+#print(string)
+#print(test)
 
 
 
@@ -208,14 +209,15 @@ print(test)
 
 #comprehend = boto3.client(service_name = 'comprehend', region_name = 'us-east-1')
 
-#text = "테스트 중 치킨이랑 맥주먹고싶다 시발 아침에 눈을 뜨면 콩깍지콩쥐 팥쥐"
+text = "테스트 중입니다. 치킨이랑 맥주먹고싶다 아침에 눈을 뜨면 해가 쨍쨍 눈사람이 반짝반짝 작은 별"
 #json_keyword = comprehend.detect_key_phrases(Text=text, LanguageCode='ko')
 
-#print(text)
+print(text)
 #text_input = okt.normalize(text)
 #print(text_input)
 
-#STT_string = string_to_keyword(text_input)
+STT_string = string_to_keyword(text)
 #print("ASD")
-#print(STT_string)
+print("키워드")
+print(STT_string)
 

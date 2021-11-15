@@ -30,8 +30,10 @@ def index(request):
     length = to_list(stored_ad_url)
 
     keyword, Full_sentence = wav_to_kakao_api(KAKAO_API_KEY())
+    print("Full_sentence", end=' ')
     print(Full_sentence)
-
+    print("keyword", end=' ')
+    print(keyword)
 #--------------------------------케이스 3 가지처리해야함-----------------------------
 
 
@@ -105,6 +107,8 @@ def index(request):
         random_ad_keyword.append(AD_LIST.objects.get(id = random_ad_id).tag3)
         random_ad_keyword.append(AD_LIST.objects.get(id = random_ad_id).tag4)
 
+        print(random_ad_keyword)
+
         random_ad_name = AD_LIST.objects.get(id = random_ad_id).ad_name
 
         str_split = random_ad.split("/embed/")
@@ -112,7 +116,7 @@ def index(request):
         random_ad_key = str_split[1]
         ad_thumnail = "http://img.youtube.com/vi/" + ad_thumnail + "/mqdefault.jpg"
 
-        random_ad_main_keyword = [AD_LIST.objects.get(ad_url = random_ad).main_key_word]
+        random_ad_main_keyword = [AD_LIST.objects.get(id = random_ad_id).main_key_word]
         tmp_similar_ad = AD_LIST.objects.filter(main_key_word=random_ad_main_keyword[0]).order_by('-feedback_value')
         similar_ad = tmp_similar_ad.values()
 
@@ -169,6 +173,7 @@ def index(request):
 
         tmp_similar_ad = AD_LIST.objects.filter(main_key_word=picked_ad_main_keyword).order_by('-feedback_value')
         similar_ad = tmp_similar_ad.values()
+
 
         if similar_ad:
             for queryset_dict in similar_ad:
@@ -309,8 +314,9 @@ def wav_to_kakao_api(rest_api_key):
             STT_string = string_to_keyword(result['value'])  #아마 STT_string 결과가 list 일 것, 그렇다면 현재는 바로 Full_string에 이어서 붙여 쓰고, 나중에 Amazon_comprehend쓸 때는 스트링으로 처리해야할 가능성이 생김
             string += ' ' + result['value']
             tmp_string.append(STT_string)
-        except:
-            pass
+        except Exception as e:
+            print(e)
+            #pass
 
     Full_keyword = sum(tmp_string, [])
     return Full_keyword, string
@@ -350,6 +356,9 @@ def string_to_keyword(string):
     for keyword in re_pair:
         keywords.append(keyword[1])
 
+#    print("string to keyword에서 나온 keyword", end=':')
+#    print(keywords)
+
     return keywords
 
 
@@ -382,7 +391,7 @@ def del_pair(pair): # 불용어 제거
 def pair_replace(pair): #스페이스바 기준으로 나눔
     del_pair(pair)
     k = []
-    print(pair)
+#    print(pair)
     for i in pair:
         if i[1].find(" ") >= 0 :
 #             k.append((i[0],i[1].replace(" ",""),i[2],i[3]))
@@ -454,34 +463,33 @@ def selected_ad(keyword, stored_ad_url, length, Full_sentence):         #태그�
     """
 
     #main_keyword 중심으로 한 번 거르기 위해 main_keyword만 중복없이  추출함.
-    for list in stored_ad_url:
-        if list.main_key_word not in tmp_list:
-            tmp_list.append(list.main_key_word)
+#    for list in stored_ad_url:
+#        if list.main_key_word not in tmp_list:
+#            tmp_list.append(list.main_key_word)
 
-    for keyword_in_list in keyword:
-        if keyword_in_list in tmp_list:   #이 부분 날려야 함.
-            #main_keywords_tag_list = AD_LIST.objects.filter(main_key_word=keyword_in_list).order_by('-feedback_value')
-            main_keywords_tag_list = AD_LIST.objects.filter(main_key_word=picked_main_keyword).order_by('-feedback_value')
-            main_keywords_tag_list = main_keywords_tag_list.values()
-            for dict in main_keywords_tag_list:
-                if dict['tag1'] in keyword:
-                    tmp_tag_cnt = tmp_tag_cnt + 1
-                if dict['tag2'] in keyword:
-                    tmp_tag_cnt = tmp_tag_cnt + 1
-                if dict['tag3'] in keyword:
-                    tmp_tag_cnt = tmp_tag_cnt + 1
-                if dict['tag4'] in keyword:
-                    tmp_tag_cnt = tmp_tag_cnt + 1
-
-                if max_tag_cnt < tmp_tag_cnt:
-                    max_tag_cnt = tmp_tag_cnt
-                    tmp_tag_cnt = 0
-                    scored_list = []
-                    scored_list.append(dict['tag1'])
-                    scored_list.append(dict['tag2'])
-                    scored_list.append(dict['tag3'])
-                    scored_list.append(dict['tag4'])
-                    result = dict['id']
+#    for keyword_in_list in keyword
+#        if keyword_in_list in tmp_list:   #이 부분 날려야 함.
+    #main_keywords_tag_list = AD_LIST.objects.filter(main_key_word=keyword_in_list).order_by('-feedback_value')
+    main_keywords_tag_list = AD_LIST.objects.filter(main_key_word=picked_main_keyword).order_by('-feedback_value')
+    main_keywords_tag_list = main_keywords_tag_list.values()
+    for dict in main_keywords_tag_list:
+        if dict['tag1'] in keyword:
+            tmp_tag_cnt = tmp_tag_cnt + 1
+        if dict['tag2'] in keyword:
+            tmp_tag_cnt = tmp_tag_cnt + 1
+        if dict['tag3'] in keyword:
+            tmp_tag_cnt = tmp_tag_cnt + 1
+        if dict['tag4'] in keyword:
+            tmp_tag_cnt = tmp_tag_cnt + 1
+        if max_tag_cnt < tmp_tag_cnt:
+            max_tag_cnt = tmp_tag_cnt
+            tmp_tag_cnt = 0
+            scored_list = []
+            scored_list.append(dict['tag1'])
+            scored_list.append(dict['tag2'])
+            scored_list.append(dict['tag3'])
+            scored_list.append(dict['tag4'])
+            result = dict['id']
         """
         for j in range(0,4):   #각각 4번 돌릴거
             if tmp_list[j] in keyword:
@@ -492,7 +500,8 @@ def selected_ad(keyword, stored_ad_url, length, Full_sentence):         #태그�
         tmp_list = []
         """
 
-    if len(scored_list) == 0:
+    if len(scored_list) == 0:          #zsl로 뽑은 main_keyword 중심으로 랜덤을 돌려야하지 않나...
+        print("음성파일은 있는데 tag1234 매칭이 안되서 랜덤으로 값 잡은 결과")
         url_list, url_list_id = watch_to_embed(stored_ad_url)
         url_list_len = len(url_list)
 
@@ -503,7 +512,13 @@ def selected_ad(keyword, stored_ad_url, length, Full_sentence):         #태그�
         #random_ad_id_feedback_value = AD_LIST.objects.get(id = random_ad_id).feedback_value
 
         random_ad_keyword = []
-        random_ad_keyword.append(AD_LIST.objects.get(id = random_ad_id).main_key_word)
+        random_ad_keyword.append(AD_LIST.objects.get(id = random_ad_id).tag1)
+        random_ad_keyword.append(AD_LIST.objects.get(id = random_ad_id).tag2)
+        random_ad_keyword.append(AD_LIST.objects.get(id = random_ad_id).tag3)
+        random_ad_keyword.append(AD_LIST.objects.get(id = random_ad_id).tag4)
+
+        print(random_ad_id)
+        print(random_ad_keyword)
         #random_ad_name = AD_LIST.objects.get(id = random_ad_id).ad_name
 
         return random_ad_id, random_ad_keyword
