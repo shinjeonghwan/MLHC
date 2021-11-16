@@ -27,8 +27,8 @@
       var player;
       function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
-          height: '680',
-          width: '960',
+          height: '580',
+          width: '760',
           playerVars: {'rel': 0},
           videoId: '{{selected_url}}',
           events: {
@@ -72,7 +72,7 @@
 <h1> < {{selected_name}} ></h1>
 <h2> < {% for list in scored_list %} #{{list}}   {% endfor %}></h2>
 
-<h2> 선택된 광고의 피드백 값< {{selected_ad_id_feedback_value}} ></h2>
+<!-- <h2> 선택된 광고의 피드백 값< {{selected_ad_id_feedback_value}} ></h2> -->
 
 <button id="P_button" value="Positive">좋아요</button>
 <button id="N_button" value="Negative" name="N">싫어요</button>
